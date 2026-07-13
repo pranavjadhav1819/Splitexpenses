@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tally — Split Expenses</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --desk: #2b2a26;
+    --tape: #ede6d3;
+    --tape-shadow: #cfc7ae;
+    --ink: #211f1a;
+    --ink-soft: #6b6558;
+    --red: #a63a2e;
+    --green: #3f6b4a;
+    --line: #c9c0a8;
+    --input-bg: #f7f4ea;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--desk);
+    background-image:
+      radial-gradient(circle at 20% 20%, rgba(255,255,255,0.03), transparent 40%),
+      radial-gradient(circle at 80% 80%, rgba(255,255,255,0.02), transparent 40%);
+    min-height: 100vh;
+    padding: 48px 16px 80px;
+    font-family: 'Inter', sans-serif;
+    color: var(--ink);
+    display: flex;
+    justify-content: center;
+  }
+
+  .tape {
+    width: 100%;
+    max-width: 480px;
+    background: var(--tape);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+    position: relative;
+  }
+
+  .perf {
+    height: 16px;
+    background-image: radial-gradient(circle at center, var(--desk) 5.5px, transparent 6px);
+    background-size: 22px 16px;
+    background-position: 11px 0;
+    background-repeat: repeat-x;
+  }
+
+  .content {
+    padding: 8px 30px 30px;
+  }
+
+  header {
+    text-align: center;
+    padding: 18px 0 20px;
+    border-bottom: 1px dashed var(--line);
+    margin-bottom: 22px;
+  }
+
+  header .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+  }
+
+  header h1 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 700;
+    font-size: 30px;
+    letter-spacing: 1px;
+    margin: 4px 0 6px;
+  }
+
+  header .sub {
+    font-size: 12.5px;
+    color: var(--ink-soft);
+  }
+
+  section {
+    margin-bottom: 26px;
+  }
+
+  .section-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px dotted var(--line);
+  }
+
+  /* People chips */
+  .people-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  input[type="text"], input[type="number"], select {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    padding: 9px 10px;
+    border: 1px solid var(--line);
+    background: var(--input-bg);
+    border-radius: 3px;
+    color: var(--ink);
+    width: 100%;
+  }
+
+  input:focus, select:focus {
+    outline: 2px solid var(--red);
+    outline-offset: 1px;
+  }
+
+  button {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12.5px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    padding: 9px 14px;
+    border: 1px solid var(--ink);
+    background: var(--ink);
+    color: var(--tape);
+    border-radius: 3px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  button:hover { background: var(--red); border-color: var(--red); }
+  button:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
+
+  button.ghost {
+    background: transparent;
+    color: var(--ink-soft);
+    border-color: var(--line);
+  }
+  button.ghost:hover { background: transparent; color: var(--red); border-color: var(--red); }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .chip {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12.5px;
+    background: var(--input-bg);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 5px 8px 5px 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .chip button {
+    all: unset;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--ink-soft);
+    padding: 0 4px;
+  }
+  .chip button:hover { color: var(--red); }
+
+  /* Expense form */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 100px;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .form-row { margin-bottom: 8px; }
+
+  .split-with {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    margin: 8px 0 12px;
+  }
+
+  .split-with label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+  }
+
+  .split-toggle {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+
+  .split-mode {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    padding: 5px 10px;
+    background: transparent;
+    color: var(--ink-soft);
+    border: 1px solid var(--line);
+  }
+  .split-mode.active {
+    background: var(--ink);
+    color: var(--tape);
+    border-color: var(--ink);
+  }
+  .split-mode:hover { background: var(--ink); color: var(--tape); border-color: var(--ink); }
+
+  .split-with.custom {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .custom-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .custom-check {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex: 1;
+  }
+
+  .share-input {
+    width: 90px;
+    padding: 5px 8px;
+    font-size: 13px;
+  }
+  .share-input:disabled { opacity: 0.35; }
+
+  .split-remaining {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11.5px;
+    text-align: right;
+    margin: 4px 0 10px;
+    font-weight: 600;
+  }
+
+  /* Receipt line items */
+  .item {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 7px 0;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13.5px;
+  }
+
+  .item .desc { white-space: nowrap; }
+  .item .leader {
+    flex: 1;
+    border-bottom: 1px dotted var(--line);
+    transform: translateY(-3px);
+  }
+  .item .amt { white-space: nowrap; font-weight: 600; }
+  .item .meta {
+    font-size: 10.5px;
+    color: var(--ink-soft);
+    display: block;
+    font-family: 'Inter', sans-serif;
+  }
+  .item-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+  .item-row .remove {
+    all: unset;
+    cursor: pointer;
+    color: var(--ink-soft);
+    font-size: 12px;
+    padding: 2px 6px;
+  }
+  .item-row .remove:hover { color: var(--red); }
+
+  .empty {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    padding: 10px 0;
+    text-align: center;
+    font-style: italic;
+  }
+
+  .total-line {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 700;
+    font-size: 15px;
+    border-top: 1px solid var(--ink);
+    padding-top: 10px;
+    margin-top: 4px;
+  }
+
+  /* Settlement stamp */
+  .settlement {
+    margin-top: 8px;
+  }
+
+  .settle-line {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    background: var(--input-bg);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    margin-bottom: 6px;
+  }
+
+  .settle-line .arrow { color: var(--red); font-weight: 700; }
+
+  .stamp {
+    display: inline-block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: var(--green);
+    border: 2px solid var(--green);
+    border-radius: 4px;
+    padding: 6px 14px;
+    transform: rotate(-3deg);
+    text-transform: uppercase;
+  }
+
+  .settled-wrap {
+    text-align: center;
+    padding: 14px 0 4px;
+  }
+
+  footer {
+    text-align: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10.5px;
+    color: var(--ink-soft);
+    padding-top: 10px;
+    border-top: 1px dashed var(--line);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="tape">
+  <div class="perf"></div>
+  <div class="content">
+    <header>
+      <div class="eyebrow">No. 001 · Shared Ledger</div>
+      <h1>TALLY</h1>
+      <div class="sub">Split the bill. Settle the tab.</div>
+    </header>
+
+    <section>
+      <div class="section-label">People</div>
+      <div class="people-row">
+        <input type="text" id="personInput" placeholder="Add a name…" maxlength="24">
+        <button id="addPersonBtn">Add</button>
+      </div>
+      <div class="chips" id="peopleChips"></div>
+    </section>
+
+    <section>
+      <div class="section-label">New expense</div>
+      <div class="form-row">
+        <input type="text" id="descInput" placeholder="What was it for?">
+      </div>
+      <div class="form-grid">
+        <select id="payerInput"><option value="">Paid by…</option></select>
+        <input type="number" id="amountInput" placeholder="0.00" min="0" step="0.01">
+      </div>
+      <div class="section-label" style="margin-top:14px;">Split between</div>
+      <div class="split-toggle" id="splitToggle">
+        <button type="button" class="split-mode active" data-mode="even">Even</button>
+        <button type="button" class="split-mode" data-mode="custom">Custom</button>
+      </div>
+      <div class="split-with" id="splitWith"></div>
+      <div class="split-remaining" id="splitRemaining" style="display:none;"></div>
+      <button id="addExpenseBtn" style="width:100%;">+ Add to ledger</button>
+    </section>
+
+    <section>
+      <div class="section-label">Ledger</div>
+      <div id="expenseList"></div>
+      <div class="total-line">
+        <span>Total</span>
+        <span id="totalAmt">$0.00</span>
+      </div>
+    </section>
+
+    <section class="settlement">
+      <div class="section-label">Settle up</div>
+      <div id="settlementList"></div>
+    </section>
+
+    <footer id="statusLine">Loading ledger…</footer>
+  </div>
+  <div class="perf"></div>
+</div>
+
+<script>
+let people = [];
+let expenses = [];
+let saveTimer = null;
+
+const STORAGE_KEY = 'tally-data';
+
+async function loadData() {
+  try {
+    const result = await window.storage.get(STORAGE_KEY, false);
+    if (result && result.value) {
+      const parsed = JSON.parse(result.value);
+      people = parsed.people || [];
+      expenses = parsed.expenses || [];
+    }
+  } catch (e) {
+    // no saved data yet — start fresh
+  }
+  render();
+  document.getElementById('statusLine').textContent = 'Saved automatically to this browser';
+}
+
+async function saveData() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(async () => {
+    try {
+      await window.storage.set(STORAGE_KEY, JSON.stringify({ people, expenses }), false);
+    } catch (e) {
+      document.getElementById('statusLine').textContent = 'Could not save — data may not persist';
+    }
+  }, 250);
+}
+
+function fmt(n) {
+  const sign = n < 0 ? '-' : '';
+  return sign + '$' + Math.abs(n).toFixed(2);
+}
+
+function addPerson() {
+  const input = document.getElementById('personInput');
+  const name = input.value.trim();
+  if (!name) return;
+  if (people.includes(name)) { input.value = ''; return; }
+  people.push(name);
+  input.value = '';
+  render();
+  saveData();
+}
+
+function removePerson(name) {
+  people = people.filter(p => p !== name);
+  expenses = expenses.filter(e => e.payer !== name).map(e => {
+    const shares = { ...e.shares };
+    delete shares[name];
+    return { ...e, shares };
+  });
+  render();
+  saveData();
+}
+
+let splitMode = 'even';
+
+function addExpense() {
+  const desc = document.getElementById('descInput').value.trim() || 'Untitled expense';
+  const payer = document.getElementById('payerInput').value;
+  const amount = parseFloat(document.getElementById('amountInput').value);
+
+  if (!payer) { flashInvalid('payerInput'); return; }
+  if (!amount || amount <= 0) { flashInvalid('amountInput'); return; }
+
+  const checks = Array.from(document.querySelectorAll('.split-check')).filter(c => c.checked);
+  if (checks.length === 0) { return; }
+
+  let shares = {};
+  if (splitMode === 'even') {
+    const even = amount / checks.length;
+    checks.forEach(c => { shares[c.value] = even; });
+  } else {
+    let sum = 0;
+    document.querySelectorAll('#splitWith .custom-row').forEach(row => {
+      const cb = row.querySelector('.split-check');
+      if (!cb.checked) return;
+      const shareInput = row.querySelector('.share-input');
+      const val = parseFloat(shareInput.value) || 0;
+      shares[cb.value] = val;
+      sum += val;
+    });
+    if (Math.abs(sum - amount) > 0.01) {
+      const remainingEl = document.getElementById('splitRemaining');
+      remainingEl.style.outline = '2px solid var(--red)';
+      setTimeout(() => { remainingEl.style.outline = ''; }, 900);
+      return;
+    }
+  }
+
+  expenses.push({ id: Date.now(), desc, payer, amount, shares });
+
+  document.getElementById('descInput').value = '';
+  document.getElementById('amountInput').value = '';
+  render();
+  saveData();
+}
+
+function flashInvalid(id) {
+  const el = document.getElementById(id);
+  el.style.outline = '2px solid var(--red)';
+  setTimeout(() => { el.style.outline = ''; }, 900);
+}
+
+function removeExpense(id) {
+  expenses = expenses.filter(e => e.id !== id);
+  render();
+  saveData();
+}
+
+function computeBalances() {
+  const balances = {};
+  people.forEach(p => balances[p] = 0);
+  expenses.forEach(e => {
+    if (!(e.payer in balances)) return;
+    balances[e.payer] += e.amount;
+    Object.entries(e.shares || {}).forEach(([p, amt]) => {
+      if (p in balances) balances[p] -= amt;
+    });
+  });
+  return balances;
+}
+
+function isEvenSplit(e) {
+  const vals = Object.values(e.shares || {});
+  if (vals.length === 0) return true;
+  const avg = e.amount / vals.length;
+  return vals.every(v => Math.abs(v - avg) < 0.01);
+}
+
+function buildSplitSection() {
+  const container = document.getElementById('splitWith');
+  const remainingEl = document.getElementById('splitRemaining');
+  container.innerHTML = '';
+
+  if (people.length === 0) {
+    container.innerHTML = '<span>Add people first</span>';
+    remainingEl.style.display = 'none';
+    return;
+  }
+
+  const amount = parseFloat(document.getElementById('amountInput').value) || 0;
+
+  if (splitMode === 'even') {
+    container.className = 'split-with';
+    people.forEach(p => {
+      const label = document.createElement('label');
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.className = 'split-check';
+      cb.value = p;
+      cb.checked = true;
+      label.appendChild(cb);
+      label.appendChild(document.createTextNode(' ' + p));
+      container.appendChild(label);
+    });
+    remainingEl.style.display = 'none';
+  } else {
+    container.className = 'split-with custom';
+    const even = amount / people.length;
+    people.forEach(p => {
+      const row = document.createElement('div');
+      row.className = 'custom-row';
+
+      const label = document.createElement('label');
+      label.className = 'custom-check';
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.className = 'split-check';
+      cb.value = p;
+      cb.checked = true;
+      cb.addEventListener('change', onCustomCheckToggle);
+      label.appendChild(cb);
+      label.appendChild(document.createTextNode(' ' + p));
+
+      const share = document.createElement('input');
+      share.type = 'number';
+      share.className = 'share-input';
+      share.min = '0';
+      share.step = '0.01';
+      share.value = even ? even.toFixed(2) : '';
+      share.addEventListener('input', updateRemaining);
+
+      row.appendChild(label);
+      row.appendChild(share);
+      container.appendChild(row);
+    });
+    remainingEl.style.display = 'block';
+    updateRemaining();
+  }
+}
+
+function refreshCustomAmounts() {
+  if (splitMode !== 'custom') return;
+  const amount = parseFloat(document.getElementById('amountInput').value) || 0;
+  const rows = Array.from(document.querySelectorAll('#splitWith .custom-row'));
+  const checkedRows = rows.filter(r => r.querySelector('.split-check').checked);
+  const even = checkedRows.length ? amount / checkedRows.length : 0;
+  checkedRows.forEach(row => {
+    row.querySelector('.share-input').value = even ? even.toFixed(2) : '';
+  });
+  updateRemaining();
+}
+
+function onCustomCheckToggle() {
+  const amount = parseFloat(document.getElementById('amountInput').value) || 0;
+  const rows = Array.from(document.querySelectorAll('#splitWith .custom-row'));
+  const checkedRows = rows.filter(r => r.querySelector('.split-check').checked);
+  const even = checkedRows.length ? amount / checkedRows.length : 0;
+  rows.forEach(row => {
+    const cb = row.querySelector('.split-check');
+    const share = row.querySelector('.share-input');
+    if (cb.checked) {
+      share.disabled = false;
+      share.value = even ? even.toFixed(2) : '';
+    } else {
+      share.disabled = true;
+      share.value = '';
+    }
+  });
+  updateRemaining();
+}
+
+function updateRemaining() {
+  if (splitMode !== 'custom') return;
+  const remainingEl = document.getElementById('splitRemaining');
+  const amount = parseFloat(document.getElementById('amountInput').value) || 0;
+  const shareInputs = Array.from(document.querySelectorAll('#splitWith .share-input:not(:disabled)'));
+  const sum = shareInputs.reduce((s, i) => s + (parseFloat(i.value) || 0), 0);
+  const diff = amount - sum;
+  if (Math.abs(diff) < 0.01) {
+    remainingEl.textContent = 'Fully allocated ✓';
+    remainingEl.style.color = 'var(--green)';
+  } else if (diff > 0) {
+    remainingEl.textContent = fmt(diff) + ' left to allocate';
+    remainingEl.style.color = 'var(--red)';
+  } else {
+    remainingEl.textContent = fmt(Math.abs(diff)) + ' over the total';
+    remainingEl.style.color = 'var(--red)';
+  }
+}
+
+function simplifySettlements(balances) {
+  const creditors = [];
+  const debtors = [];
+  Object.entries(balances).forEach(([p, bal]) => {
+    if (bal > 0.005) creditors.push({ p, bal });
+    else if (bal < -0.005) debtors.push({ p, bal: -bal });
+  });
+  creditors.sort((a, b) => b.bal - a.bal);
+  debtors.sort((a, b) => b.bal - a.bal);
+
+  const txns = [];
+  let i = 0, j = 0;
+  while (i < debtors.length && j < creditors.length) {
+    const pay = Math.min(debtors[i].bal, creditors[j].bal);
+    txns.push({ from: debtors[i].p, to: creditors[j].p, amt: pay });
+    debtors[i].bal -= pay;
+    creditors[j].bal -= pay;
+    if (debtors[i].bal < 0.005) i++;
+    if (creditors[j].bal < 0.005) j++;
+  }
+  return txns;
+}
+
+function render() {
+  // people chips
+  const chipsEl = document.getElementById('peopleChips');
+  chipsEl.innerHTML = '';
+  if (people.length === 0) {
+    chipsEl.innerHTML = '<div class="empty">Add everyone splitting the bill</div>';
+  }
+  people.forEach(p => {
+    const chip = document.createElement('div');
+    chip.className = 'chip';
+    chip.innerHTML = `${escapeHtml(p)} <button aria-label="Remove ${escapeHtml(p)}">×</button>`;
+    chip.querySelector('button').onclick = () => removePerson(p);
+    chipsEl.appendChild(chip);
+  });
+
+  // payer select
+  const payerSel = document.getElementById('payerInput');
+  const prevVal = payerSel.value;
+  payerSel.innerHTML = '<option value="">Paid by…</option>' +
+    people.map(p => `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`).join('');
+  if (people.includes(prevVal)) payerSel.value = prevVal;
+
+  // expense list
+  const listEl = document.getElementById('expenseList');
+  listEl.innerHTML = '';
+  if (expenses.length === 0) {
+    listEl.innerHTML = '<div class="empty">No expenses yet — add the first one above</div>';
+  }
+  let total = 0;
+  expenses.forEach(e => {
+    total += e.amount;
+    const row = document.createElement('div');
+    row.className = 'item-row';
+    const n = Object.keys(e.shares || {}).length;
+    const splitLabel = isEvenSplit(e)
+      ? `split evenly, ${n} way${n === 1 ? '' : 's'}`
+      : `custom split, ${n} people`;
+    row.innerHTML = `
+      <div class="item" style="flex:1;">
+        <span class="desc">${escapeHtml(e.desc)}<span class="meta">paid by ${escapeHtml(e.payer)} · ${splitLabel}</span></span>
+        <span class="leader"></span>
+        <span class="amt">${fmt(e.amount)}</span>
+      </div>
+      <button class="remove" aria-label="Remove expense">✕</button>
+    `;
+    row.querySelector('.remove').onclick = () => removeExpense(e.id);
+    listEl.appendChild(row);
+  });
+  document.getElementById('totalAmt').textContent = fmt(total);
+
+  // settlement
+  const settleEl = document.getElementById('settlementList');
+  settleEl.innerHTML = '';
+  const balances = computeBalances();
+  const txns = simplifySettlements(balances);
+  if (people.length === 0) {
+    settleEl.innerHTML = '<div class="empty">Nothing to settle yet</div>';
+  } else if (txns.length === 0) {
+    settleEl.innerHTML = '<div class="settled-wrap"><span class="stamp">All settled</span></div>';
+  } else {
+    txns.forEach(t => {
+      const line = document.createElement('div');
+      line.className = 'settle-line';
+      line.innerHTML = `<span>${escapeHtml(t.from)}</span><span class="arrow">→</span><span>${escapeHtml(t.to)}</span><span style="margin-left:auto; font-weight:700;">${fmt(t.amt)}</span>`;
+      settleEl.appendChild(line);
+    });
+  }
+
+  buildSplitSection();
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+document.getElementById('addPersonBtn').onclick = addPerson;
+document.getElementById('personInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') { e.preventDefault(); addPerson(); }
+});
+document.getElementById('addExpenseBtn').onclick = addExpense;
+
+document.querySelectorAll('.split-mode').forEach(btn => {
+  btn.addEventListener('click', () => {
+    splitMode = btn.dataset.mode;
+    document.querySelectorAll('.split-mode').forEach(b => b.classList.toggle('active', b === btn));
+    buildSplitSection();
+  });
+});
+
+document.getElementById('amountInput').addEventListener('input', refreshCustomAmounts);
+
+loadData();
+</script>
+
+</body>
+</html>
