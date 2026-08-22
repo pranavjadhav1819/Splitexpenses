@@ -3,796 +3,2536 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tally — Split Expenses</title>
+<meta name="theme-color" content="#0b0d12">
+
+<title>TALLY — Smart Expense Splitter</title>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
 <style>
-  :root {
-    --desk: #2b2a26;
-    --tape: #ede6d3;
-    --tape-shadow: #cfc7ae;
-    --ink: #211f1a;
-    --ink-soft: #6b6558;
-    --red: #a63a2e;
-    --green: #3f6b4a;
-    --line: #c9c0a8;
-    --input-bg: #f7f4ea;
+:root {
+  --bg: #080a0f;
+  --bg-2: #0e1118;
+  --card: rgba(20, 24, 33, 0.78);
+  --card-strong: #151923;
+  --border: rgba(255,255,255,.09);
+
+  --text: #f5f7fa;
+  --muted: #8b93a3;
+
+  --primary: #7c5cff;
+  --primary-2: #9b85ff;
+  --green: #38d996;
+  --red: #ff5f6d;
+  --yellow: #ffc857;
+
+  --input: rgba(255,255,255,.055);
+  --shadow: 0 25px 80px rgba(0,0,0,.45);
+
+  --radius: 20px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 10% 10%, rgba(124,92,255,.16), transparent 30%),
+    radial-gradient(circle at 90% 80%, rgba(56,217,150,.08), transparent 30%),
+    var(--bg);
+
+  color: var(--text);
+  font-family: "DM Sans", sans-serif;
+}
+
+/* ---------- Background decoration ---------- */
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+
+  background-image:
+    linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px);
+
+  background-size: 40px 40px;
+
+  mask-image: linear-gradient(to bottom, black, transparent);
+}
+
+/* ---------- App ---------- */
+
+.app {
+  width: min(1100px, calc(100% - 30px));
+  margin: 0 auto;
+  padding: 35px 0 70px;
+}
+
+/* ---------- Header ---------- */
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 30px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.logo {
+  width: 46px;
+  height: 46px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 14px;
+
+  background:
+    linear-gradient(135deg, var(--primary), #4c35d9);
+
+  box-shadow: 0 10px 35px rgba(124,92,255,.35);
+
+  font-family: "Space Mono", monospace;
+  font-weight: 700;
+  font-size: 19px;
+}
+
+.brand h1 {
+  margin: 0;
+  font-size: 22px;
+  letter-spacing: -.5px;
+}
+
+.brand p {
+  margin: 3px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  padding: 8px 12px;
+
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,.035);
+  border-radius: 999px;
+
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 12px var(--green);
+}
+
+/* ---------- Dashboard ---------- */
+
+.dashboard {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.stat-card {
+  position: relative;
+  overflow: hidden;
+
+  padding: 20px;
+
+  border: 1px solid var(--border);
+  background: var(--card);
+
+  border-radius: var(--radius);
+
+  backdrop-filter: blur(18px);
+
+  box-shadow: var(--shadow);
+}
+
+.stat-card::after {
+  content: "";
+  position: absolute;
+  width: 120px;
+  height: 120px;
+
+  right: -50px;
+  top: -60px;
+
+  border-radius: 50%;
+
+  background: rgba(124,92,255,.1);
+}
+
+.stat-label {
+  color: var(--muted);
+  font-size: 12px;
+  margin-bottom: 9px;
+}
+
+.stat-value {
+  font-family: "Space Mono", monospace;
+  font-size: 25px;
+  font-weight: 700;
+}
+
+.stat-small {
+  color: var(--muted);
+  font-size: 11px;
+  margin-top: 7px;
+}
+
+/* ---------- Main grid ---------- */
+
+.main-grid {
+  display: grid;
+  grid-template-columns: 390px 1fr;
+  gap: 18px;
+  align-items: start;
+}
+
+.card {
+  border: 1px solid var(--border);
+  background: var(--card);
+
+  border-radius: var(--radius);
+
+  backdrop-filter: blur(18px);
+
+  box-shadow: var(--shadow);
+
+  padding: 22px;
+}
+
+.card + .card {
+  margin-top: 18px;
+}
+
+.card-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 18px;
+}
+
+.card-title h2 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.card-title span {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+/* ---------- Inputs ---------- */
+
+.form-group {
+  margin-bottom: 12px;
+}
+
+label.field-label {
+  display: block;
+
+  color: var(--muted);
+  font-size: 11px;
+
+  margin-bottom: 7px;
+}
+
+input,
+select {
+  width: 100%;
+
+  border: 1px solid var(--border);
+  background: var(--input);
+
+  color: var(--text);
+
+  padding: 12px 13px;
+
+  border-radius: 11px;
+
+  font-family: inherit;
+  font-size: 13px;
+
+  transition: .2s;
+}
+
+select option {
+  background: #151923;
+}
+
+input::placeholder {
+  color: #606878;
+}
+
+input:focus,
+select:focus {
+  outline: none;
+  border-color: rgba(124,92,255,.7);
+
+  box-shadow:
+    0 0 0 3px rgba(124,92,255,.12);
+}
+
+/* ---------- Buttons ---------- */
+
+button {
+  border: 0;
+
+  font-family: inherit;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    transform .15s,
+    box-shadow .15s,
+    background .15s;
+}
+
+button:active {
+  transform: scale(.97);
+}
+
+.primary-btn {
+  width: 100%;
+
+  padding: 12px 15px;
+
+  border-radius: 11px;
+
+  background:
+    linear-gradient(135deg, var(--primary), #5b40df);
+
+  color: white;
+
+  box-shadow: 0 10px 25px rgba(124,92,255,.2);
+}
+
+.primary-btn:hover {
+  box-shadow: 0 13px 30px rgba(124,92,255,.35);
+  transform: translateY(-1px);
+}
+
+.small-btn {
+  padding: 8px 12px;
+
+  border-radius: 9px;
+
+  background: rgba(255,255,255,.06);
+
+  border: 1px solid var(--border);
+
+  color: var(--muted);
+
+  font-size: 11px;
+}
+
+.small-btn:hover {
+  color: white;
+  background: rgba(255,255,255,.1);
+}
+
+/* ---------- People ---------- */
+
+.people-input {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 13px;
+}
+
+.people-input button {
+  padding: 0 17px;
+
+  border-radius: 11px;
+
+  background: rgba(255,255,255,.08);
+
+  color: white;
+
+  border: 1px solid var(--border);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 7px 9px 7px 12px;
+
+  border-radius: 999px;
+
+  background: rgba(124,92,255,.11);
+  border: 1px solid rgba(124,92,255,.22);
+
+  font-size: 12px;
+}
+
+.chip-remove {
+  width: 18px;
+  height: 18px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 50%;
+
+  background: rgba(255,255,255,.08);
+
+  color: var(--muted);
+
+  font-size: 12px;
+}
+
+.chip-remove:hover {
+  background: rgba(255,95,109,.2);
+  color: var(--red);
+}
+
+.empty {
+  color: var(--muted);
+
+  text-align: center;
+
+  padding: 20px 5px;
+
+  font-size: 12px;
+}
+
+/* ---------- Expense form ---------- */
+
+.amount-row {
+  display: grid;
+  grid-template-columns: 1fr 120px;
+  gap: 8px;
+}
+
+.split-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+
+  margin-bottom: 12px;
+
+  padding: 4px;
+
+  background: rgba(255,255,255,.035);
+
+  border: 1px solid var(--border);
+
+  border-radius: 11px;
+}
+
+.split-mode {
+  padding: 8px;
+
+  background: transparent;
+
+  color: var(--muted);
+
+  border-radius: 8px;
+
+  font-size: 11px;
+}
+
+.split-mode.active {
+  background: var(--primary);
+  color: white;
+}
+
+.split-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  margin-bottom: 12px;
+}
+
+.person-check {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 9px 11px;
+
+  border: 1px solid var(--border);
+
+  border-radius: 10px;
+
+  background: rgba(255,255,255,.025);
+
+  font-size: 12px;
+}
+
+.person-check-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.person-check input {
+  width: auto;
+  accent-color: var(--primary);
+}
+
+.share-input {
+  width: 90px;
+  padding: 7px 8px;
+}
+
+.share-input:disabled {
+  opacity: .3;
+}
+
+.remaining {
+  margin: 5px 0 12px;
+
+  font-family: "Space Mono", monospace;
+
+  text-align: right;
+
+  font-size: 10px;
+}
+
+/* ---------- Expenses ---------- */
+
+.expense-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.expense {
+  display: grid;
+  grid-template-columns: 1fr auto;
+
+  gap: 10px;
+
+  padding: 14px;
+
+  border: 1px solid var(--border);
+
+  background: rgba(255,255,255,.025);
+
+  border-radius: 13px;
+
+  transition: .2s;
+}
+
+.expense:hover {
+  background: rgba(255,255,255,.045);
+  border-color: rgba(124,92,255,.22);
+  transform: translateY(-1px);
+}
+
+.expense-main {
+  min-width: 0;
+}
+
+.expense-name {
+  font-size: 13px;
+  font-weight: 600;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.expense-meta {
+  margin-top: 4px;
+
+  color: var(--muted);
+
+  font-size: 10px;
+}
+
+.expense-amount {
+  text-align: right;
+
+  font-family: "Space Mono", monospace;
+
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.delete-btn {
+  margin-top: 6px;
+
+  background: transparent;
+
+  color: #596170;
+
+  font-size: 10px;
+}
+
+.delete-btn:hover {
+  color: var(--red);
+}
+
+.total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-top: 13px;
+  padding-top: 15px;
+
+  border-top: 1px solid var(--border);
+
+  font-family: "Space Mono", monospace;
+}
+
+.total span:first-child {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.total span:last-child {
+  font-size: 18px;
+}
+
+/* ---------- Settlement ---------- */
+
+.settlement-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.settle {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto;
+
+  align-items: center;
+  gap: 10px;
+
+  padding: 13px;
+
+  border-radius: 12px;
+
+  border: 1px solid rgba(56,217,150,.13);
+
+  background: rgba(56,217,150,.035);
+
+  font-size: 12px;
+}
+
+.settle-person {
+  font-weight: 600;
+}
+
+.arrow {
+  color: var(--green);
+}
+
+.settle-amount {
+  font-family: "Space Mono", monospace;
+  color: var(--green);
+  font-weight: 700;
+}
+
+.all-settled {
+  text-align: center;
+
+  padding: 25px;
+
+  border: 1px dashed rgba(56,217,150,.25);
+
+  border-radius: 13px;
+
+  color: var(--green);
+
+  font-family: "Space Mono", monospace;
+
+  font-size: 12px;
+}
+
+.all-settled-icon {
+  font-size: 25px;
+  margin-bottom: 8px;
+}
+
+/* ---------- Balance ---------- */
+
+.balance-list {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.balance-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 9px 11px;
+
+  border-radius: 9px;
+
+  background: rgba(255,255,255,.025);
+
+  font-size: 12px;
+}
+
+.balance-positive {
+  color: var(--green);
+}
+
+.balance-negative {
+  color: var(--red);
+}
+
+.balance-zero {
+  color: var(--muted);
+}
+
+/* ---------- Footer ---------- */
+
+footer {
+  margin-top: 20px;
+
+  text-align: center;
+
+  color: #555d6c;
+
+  font-size: 10px;
+}
+
+/* ---------- Toast ---------- */
+
+.toast {
+  position: fixed;
+
+  left: 50%;
+  bottom: 25px;
+
+  transform: translate(-50%, 100px);
+
+  padding: 11px 16px;
+
+  border-radius: 999px;
+
+  background: #171b25;
+
+  border: 1px solid var(--border);
+
+  box-shadow: 0 15px 40px rgba(0,0,0,.4);
+
+  font-size: 12px;
+
+  opacity: 0;
+
+  transition: .3s;
+
+  z-index: 100;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 850px) {
+
+  .main-grid {
+    grid-template-columns: 1fr;
   }
 
-  * { box-sizing: border-box; }
+}
 
-  body {
-    margin: 0;
-    background: var(--desk);
-    background-image:
-      radial-gradient(circle at 20% 20%, rgba(255,255,255,0.03), transparent 40%),
-      radial-gradient(circle at 80% 80%, rgba(255,255,255,0.02), transparent 40%);
-    min-height: 100vh;
-    padding: 48px 16px 80px;
-    font-family: 'Inter', sans-serif;
-    color: var(--ink);
-    display: flex;
-    justify-content: center;
+@media (max-width: 600px) {
+
+  .app {
+    width: min(100% - 20px, 600px);
+    padding-top: 18px;
   }
 
-  .tape {
-    width: 100%;
-    max-width: 480px;
-    background: var(--tape);
-    box-shadow: 0 20px 50px rgba(0,0,0,0.4);
-    position: relative;
+  .dashboard {
+    grid-template-columns: 1fr;
   }
 
-  .perf {
-    height: 16px;
-    background-image: radial-gradient(circle at center, var(--desk) 5.5px, transparent 6px);
-    background-size: 22px 16px;
-    background-position: 11px 0;
-    background-repeat: repeat-x;
-  }
-
-  .content {
-    padding: 8px 30px 30px;
-  }
-
-  header {
-    text-align: center;
-    padding: 18px 0 20px;
-    border-bottom: 1px dashed var(--line);
-    margin-bottom: 22px;
-  }
-
-  header .eyebrow {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 3px;
-    color: var(--ink-soft);
-    text-transform: uppercase;
-  }
-
-  header h1 {
-    font-family: 'IBM Plex Mono', monospace;
-    font-weight: 700;
-    font-size: 30px;
-    letter-spacing: 1px;
-    margin: 4px 0 6px;
-  }
-
-  header .sub {
-    font-size: 12.5px;
-    color: var(--ink-soft);
-  }
-
-  section {
-    margin-bottom: 26px;
-  }
-
-  .section-label {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--ink-soft);
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .section-label::after {
-    content: '';
-    flex: 1;
-    border-bottom: 1px dotted var(--line);
-  }
-
-  /* People chips */
-  .people-row {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 10px;
-  }
-
-  input[type="text"], input[type="number"], select {
-    font-family: 'Inter', sans-serif;
-    font-size: 14px;
-    padding: 9px 10px;
-    border: 1px solid var(--line);
-    background: var(--input-bg);
-    border-radius: 3px;
-    color: var(--ink);
-    width: 100%;
-  }
-
-  input:focus, select:focus {
-    outline: 2px solid var(--red);
-    outline-offset: 1px;
-  }
-
-  button {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 12.5px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    padding: 9px 14px;
-    border: 1px solid var(--ink);
-    background: var(--ink);
-    color: var(--tape);
-    border-radius: 3px;
-    cursor: pointer;
-    white-space: nowrap;
-  }
-
-  button:hover { background: var(--red); border-color: var(--red); }
-  button:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
-
-  button.ghost {
-    background: transparent;
-    color: var(--ink-soft);
-    border-color: var(--line);
-  }
-  button.ghost:hover { background: transparent; color: var(--red); border-color: var(--red); }
-
-  .chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-
-  .chip {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 12.5px;
-    background: var(--input-bg);
-    border: 1px solid var(--line);
-    border-radius: 20px;
-    padding: 5px 8px 5px 12px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .chip button {
-    all: unset;
-    cursor: pointer;
-    font-size: 13px;
-    color: var(--ink-soft);
-    padding: 0 4px;
-  }
-  .chip button:hover { color: var(--red); }
-
-  /* Expense form */
-  .form-grid {
-    display: grid;
-    grid-template-columns: 1fr 100px;
-    gap: 8px;
-    margin-bottom: 8px;
-  }
-
-  .form-row { margin-bottom: 8px; }
-
-  .split-with {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 12.5px;
-    color: var(--ink-soft);
-    margin: 8px 0 12px;
-  }
-
-  .split-with label {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    cursor: pointer;
-  }
-
-  .split-toggle {
-    display: flex;
-    gap: 6px;
-    margin-bottom: 10px;
-  }
-
-  .split-mode {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 11px;
-    padding: 5px 10px;
-    background: transparent;
-    color: var(--ink-soft);
-    border: 1px solid var(--line);
-  }
-  .split-mode.active {
-    background: var(--ink);
-    color: var(--tape);
-    border-color: var(--ink);
-  }
-  .split-mode:hover { background: var(--ink); color: var(--tape); border-color: var(--ink); }
-
-  .split-with.custom {
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .custom-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-  }
-
-  .custom-check {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    flex: 1;
-  }
-
-  .share-input {
-    width: 90px;
-    padding: 5px 8px;
-    font-size: 13px;
-  }
-  .share-input:disabled { opacity: 0.35; }
-
-  .split-remaining {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 11.5px;
-    text-align: right;
-    margin: 4px 0 10px;
-    font-weight: 600;
-  }
-
-  /* Receipt line items */
-  .item {
-    display: flex;
-    align-items: baseline;
-    gap: 8px;
-    padding: 7px 0;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 13.5px;
-  }
-
-  .item .desc { white-space: nowrap; }
-  .item .leader {
-    flex: 1;
-    border-bottom: 1px dotted var(--line);
-    transform: translateY(-3px);
-  }
-  .item .amt { white-space: nowrap; font-weight: 600; }
-  .item .meta {
-    font-size: 10.5px;
-    color: var(--ink-soft);
-    display: block;
-    font-family: 'Inter', sans-serif;
-  }
-  .item-row {
-    display: flex;
-    justify-content: space-between;
+  .topbar {
     align-items: flex-start;
   }
-  .item-row .remove {
-    all: unset;
-    cursor: pointer;
-    color: var(--ink-soft);
-    font-size: 12px;
-    padding: 2px 6px;
-  }
-  .item-row .remove:hover { color: var(--red); }
 
-  .empty {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 12.5px;
-    color: var(--ink-soft);
-    padding: 10px 0;
-    text-align: center;
-    font-style: italic;
+  .status {
+    display: none;
   }
 
-  .total-line {
-    display: flex;
-    justify-content: space-between;
-    font-family: 'IBM Plex Mono', monospace;
-    font-weight: 700;
-    font-size: 15px;
-    border-top: 1px solid var(--ink);
-    padding-top: 10px;
-    margin-top: 4px;
+  .card {
+    padding: 17px;
+    border-radius: 16px;
   }
 
-  /* Settlement stamp */
-  .settlement {
-    margin-top: 8px;
+  .amount-row {
+    grid-template-columns: 1fr;
   }
 
-  .settle-line {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 13.5px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 10px;
-    background: var(--input-bg);
-    border: 1px solid var(--line);
-    border-radius: 3px;
-    margin-bottom: 6px;
+  .settle {
+    grid-template-columns: 1fr auto;
   }
 
-  .settle-line .arrow { color: var(--red); font-weight: 700; }
-
-  .stamp {
-    display: inline-block;
-    font-family: 'IBM Plex Mono', monospace;
-    font-weight: 700;
-    font-size: 12px;
-    letter-spacing: 2px;
-    color: var(--green);
-    border: 2px solid var(--green);
-    border-radius: 4px;
-    padding: 6px 14px;
-    transform: rotate(-3deg);
-    text-transform: uppercase;
+  .settle .arrow {
+    display: none;
   }
 
-  .settled-wrap {
-    text-align: center;
-    padding: 14px 0 4px;
+  .settle-amount {
+    text-align: right;
   }
 
-  footer {
-    text-align: center;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 10.5px;
-    color: var(--ink-soft);
-    padding-top: 10px;
-    border-top: 1px dashed var(--line);
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    * { transition: none !important; }
-  }
+}
 </style>
 </head>
+
 <body>
 
-<div class="tape">
-  <div class="perf"></div>
-  <div class="content">
-    <header>
-      <div class="eyebrow">No. 001 · Shared Ledger</div>
-      <h1>TALLY</h1>
-      <div class="sub">Split the bill. Settle the tab.</div>
-    </header>
+<div class="app">
 
-    <section>
-      <div class="section-label">People</div>
-      <div class="people-row">
-        <input type="text" id="personInput" placeholder="Add a name…" maxlength="24">
-        <button id="addPersonBtn">Add</button>
-      </div>
-      <div class="chips" id="peopleChips"></div>
-    </section>
+  <!-- HEADER -->
+  <header class="topbar">
 
-    <section>
-      <div class="section-label">New expense</div>
-      <div class="form-row">
-        <input type="text" id="descInput" placeholder="What was it for?">
-      </div>
-      <div class="form-grid">
-        <select id="payerInput"><option value="">Paid by…</option></select>
-        <input type="number" id="amountInput" placeholder="0.00" min="0" step="0.01">
-      </div>
-      <div class="section-label" style="margin-top:14px;">Split between</div>
-      <div class="split-toggle" id="splitToggle">
-        <button type="button" class="split-mode active" data-mode="even">Even</button>
-        <button type="button" class="split-mode" data-mode="custom">Custom</button>
-      </div>
-      <div class="split-with" id="splitWith"></div>
-      <div class="split-remaining" id="splitRemaining" style="display:none;"></div>
-      <button id="addExpenseBtn" style="width:100%;">+ Add to ledger</button>
-    </section>
+    <div class="brand">
 
-    <section>
-      <div class="section-label">Ledger</div>
-      <div id="expenseList"></div>
-      <div class="total-line">
-        <span>Total</span>
-        <span id="totalAmt">$0.00</span>
+      <div class="logo">T</div>
+
+      <div>
+        <h1>TALLY</h1>
+        <p>Smart expense splitting</p>
       </div>
-    </section>
 
-    <section class="settlement">
-      <div class="section-label">Settle up</div>
-      <div id="settlementList"></div>
-    </section>
+    </div>
 
-    <footer id="statusLine">Loading ledger…</footer>
+    <div class="status">
+      <span class="status-dot"></span>
+      Saved locally
+    </div>
+
+  </header>
+
+
+  <!-- DASHBOARD -->
+  <div class="dashboard">
+
+    <div class="stat-card">
+      <div class="stat-label">TOTAL SPENDING</div>
+      <div class="stat-value" id="totalStat">$0.00</div>
+      <div class="stat-small">Across all expenses</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-label">PEOPLE</div>
+      <div class="stat-value" id="peopleStat">0</div>
+      <div class="stat-small">In this group</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-label">EXPENSES</div>
+      <div class="stat-value" id="expenseStat">0</div>
+      <div class="stat-small">Recorded transactions</div>
+    </div>
+
   </div>
-  <div class="perf"></div>
+
+
+  <!-- MAIN -->
+  <main class="main-grid">
+
+    <!-- LEFT COLUMN -->
+    <div>
+
+      <!-- PEOPLE -->
+      <section class="card">
+
+        <div class="card-title">
+          <h2>People</h2>
+          <span id="peopleCount">0 members</span>
+        </div>
+
+        <div class="people-input">
+
+          <input
+            type="text"
+            id="personInput"
+            placeholder="Enter person's name"
+            maxlength="24"
+          >
+
+          <button id="addPersonBtn">
+            Add
+          </button>
+
+        </div>
+
+        <div class="chips" id="peopleChips"></div>
+
+      </section>
+
+
+      <!-- EXPENSE FORM -->
+      <section class="card">
+
+        <div class="card-title">
+          <h2>New expense</h2>
+          <span>ADD TRANSACTION</span>
+        </div>
+
+        <div class="form-group">
+
+          <label class="field-label">
+            DESCRIPTION
+          </label>
+
+          <input
+            type="text"
+            id="descInput"
+            placeholder="Dinner, hotel, groceries..."
+          >
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label class="field-label">
+            PAID BY
+          </label>
+
+          <select id="payerInput">
+            <option value="">Select payer...</option>
+          </select>
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label class="field-label">
+            AMOUNT
+          </label>
+
+          <input
+            type="number"
+            id="amountInput"
+            placeholder="0.00"
+            min="0"
+            step="0.01"
+          >
+
+        </div>
+
+
+        <div class="field-label">
+          SPLIT METHOD
+        </div>
+
+        <div class="split-toggle">
+
+          <button
+            type="button"
+            class="split-mode active"
+            data-mode="even"
+          >
+            Even
+          </button>
+
+          <button
+            type="button"
+            class="split-mode"
+            data-mode="custom"
+          >
+            Custom
+          </button>
+
+        </div>
+
+
+        <div class="field-label">
+          SPLIT BETWEEN
+        </div>
+
+        <div
+          class="split-list"
+          id="splitWith"
+        ></div>
+
+
+        <div
+          class="remaining"
+          id="splitRemaining"
+          style="display:none;"
+        ></div>
+
+
+        <button
+          class="primary-btn"
+          id="addExpenseBtn"
+        >
+          + Add expense
+        </button>
+
+      </section>
+
+
+      <!-- BALANCES -->
+      <section class="card">
+
+        <div class="card-title">
+          <h2>Balances</h2>
+          <span>WHO OWES WHAT</span>
+        </div>
+
+        <div
+          class="balance-list"
+          id="balanceList"
+        ></div>
+
+      </section>
+
+    </div>
+
+
+    <!-- RIGHT COLUMN -->
+    <div>
+
+      <!-- LEDGER -->
+      <section class="card">
+
+        <div class="card-title">
+
+          <h2>Expense ledger</h2>
+
+          <button
+            class="small-btn"
+            id="clearBtn"
+          >
+            Clear all
+          </button>
+
+        </div>
+
+        <div
+          class="expense-list"
+          id="expenseList"
+        ></div>
+
+        <div class="total">
+
+          <span>TOTAL</span>
+
+          <span id="totalAmt">
+            $0.00
+          </span>
+
+        </div>
+
+      </section>
+
+
+      <!-- SETTLEMENT -->
+      <section class="card">
+
+        <div class="card-title">
+
+          <h2>Settle up</h2>
+
+          <span>MINIMUM TRANSFERS</span>
+
+        </div>
+
+        <div
+          class="settlement-list"
+          id="settlementList"
+        ></div>
+
+      </section>
+
+    </div>
+
+  </main>
+
+
+  <footer>
+    TALLY · Your expenses stay on this device
+  </footer>
+
 </div>
 
+
+<div
+  class="toast"
+  id="toast"
+></div>
+
+
 <script>
+
+/* =========================================================
+   TALLY — MODERN EXPENSE SPLITTER
+   ========================================================= */
+
 let people = [];
 let expenses = [];
-let saveTimer = null;
 
-const STORAGE_KEY = 'tally-data';
+let splitMode = "even";
 
-async function loadData() {
+const STORAGE_KEY = "tally-modern-data";
+
+
+/* =========================================================
+   STORAGE
+   ========================================================= */
+
+function saveData() {
+
+  localStorage.setItem(
+    STORAGE_KEY,
+    JSON.stringify({
+      people,
+      expenses
+    })
+  );
+
+}
+
+
+function loadData() {
+
   try {
-    const result = await window.storage.get(STORAGE_KEY, false);
-    if (result && result.value) {
-      const parsed = JSON.parse(result.value);
-      people = parsed.people || [];
-      expenses = parsed.expenses || [];
+
+    const saved =
+      localStorage.getItem(STORAGE_KEY);
+
+    if (saved) {
+
+      const data = JSON.parse(saved);
+
+      people = data.people || [];
+      expenses = data.expenses || [];
+
     }
-  } catch (e) {
-    // no saved data yet — start fresh
+
+  } catch (error) {
+
+    people = [];
+    expenses = [];
+
   }
+
   render();
-  document.getElementById('statusLine').textContent = 'Saved automatically to this browser';
+
 }
 
-async function saveData() {
-  clearTimeout(saveTimer);
-  saveTimer = setTimeout(async () => {
-    try {
-      await window.storage.set(STORAGE_KEY, JSON.stringify({ people, expenses }), false);
-    } catch (e) {
-      document.getElementById('statusLine').textContent = 'Could not save — data may not persist';
-    }
-  }, 250);
+
+/* =========================================================
+   UTILITIES
+   ========================================================= */
+
+function fmt(amount) {
+
+  return "$" + Number(amount || 0).toFixed(2);
+
 }
 
-function fmt(n) {
-  const sign = n < 0 ? '-' : '';
-  return sign + '$' + Math.abs(n).toFixed(2);
+
+function escapeHtml(value) {
+
+  const div = document.createElement("div");
+
+  div.textContent = value;
+
+  return div.innerHTML;
+
 }
+
+
+function showToast(message) {
+
+  const toast =
+    document.getElementById("toast");
+
+  toast.textContent = message;
+
+  toast.classList.add("show");
+
+  setTimeout(() => {
+
+    toast.classList.remove("show");
+
+  }, 2200);
+
+}
+
+
+/* =========================================================
+   PEOPLE
+   ========================================================= */
 
 function addPerson() {
-  const input = document.getElementById('personInput');
-  const name = input.value.trim();
-  if (!name) return;
-  if (people.includes(name)) { input.value = ''; return; }
+
+  const input =
+    document.getElementById("personInput");
+
+  const name =
+    input.value.trim();
+
+  if (!name) {
+
+    showToast("Enter a person's name");
+
+    return;
+
+  }
+
+  if (people.includes(name)) {
+
+    showToast("That person already exists");
+
+    input.value = "";
+
+    return;
+
+  }
+
   people.push(name);
-  input.value = '';
-  render();
+
+  input.value = "";
+
   saveData();
+
+  render();
+
+  showToast(`${name} added`);
+
 }
+
 
 function removePerson(name) {
-  people = people.filter(p => p !== name);
-  expenses = expenses.filter(e => e.payer !== name).map(e => {
-    const shares = { ...e.shares };
-    delete shares[name];
-    return { ...e, shares };
-  });
-  render();
+
+  if (
+    !confirm(
+      `Remove ${name} from the group?`
+    )
+  ) return;
+
+  people =
+    people.filter(
+      person => person !== name
+    );
+
+  expenses =
+    expenses
+      .filter(
+        expense => expense.payer !== name
+      )
+      .map(expense => {
+
+        const shares =
+          { ...expense.shares };
+
+        delete shares[name];
+
+        return {
+          ...expense,
+          shares
+        };
+
+      });
+
   saveData();
+
+  render();
+
+  showToast(`${name} removed`);
+
 }
 
-let splitMode = 'even';
+
+/* =========================================================
+   EXPENSES
+   ========================================================= */
 
 function addExpense() {
-  const desc = document.getElementById('descInput').value.trim() || 'Untitled expense';
-  const payer = document.getElementById('payerInput').value;
-  const amount = parseFloat(document.getElementById('amountInput').value);
 
-  if (!payer) { flashInvalid('payerInput'); return; }
-  if (!amount || amount <= 0) { flashInvalid('amountInput'); return; }
+  const desc =
+    document
+      .getElementById("descInput")
+      .value
+      .trim()
+      || "Untitled expense";
 
-  const checks = Array.from(document.querySelectorAll('.split-check')).filter(c => c.checked);
-  if (checks.length === 0) { return; }
+  const payer =
+    document
+      .getElementById("payerInput")
+      .value;
 
-  let shares = {};
-  if (splitMode === 'even') {
-    const even = amount / checks.length;
-    checks.forEach(c => { shares[c.value] = even; });
-  } else {
-    let sum = 0;
-    document.querySelectorAll('#splitWith .custom-row').forEach(row => {
-      const cb = row.querySelector('.split-check');
-      if (!cb.checked) return;
-      const shareInput = row.querySelector('.share-input');
-      const val = parseFloat(shareInput.value) || 0;
-      shares[cb.value] = val;
-      sum += val;
-    });
-    if (Math.abs(sum - amount) > 0.01) {
-      const remainingEl = document.getElementById('splitRemaining');
-      remainingEl.style.outline = '2px solid var(--red)';
-      setTimeout(() => { remainingEl.style.outline = ''; }, 900);
-      return;
-    }
+  const amount =
+    parseFloat(
+      document
+        .getElementById("amountInput")
+        .value
+    );
+
+  if (!payer) {
+
+    showToast("Select who paid");
+
+    return;
+
   }
 
-  expenses.push({ id: Date.now(), desc, payer, amount, shares });
+  if (!amount || amount <= 0) {
 
-  document.getElementById('descInput').value = '';
-  document.getElementById('amountInput').value = '';
-  render();
+    showToast("Enter a valid amount");
+
+    return;
+
+  }
+
+  const checks =
+    Array
+      .from(
+        document.querySelectorAll(
+          ".split-check"
+        )
+      )
+      .filter(
+        checkbox => checkbox.checked
+      );
+
+  if (!checks.length) {
+
+    showToast(
+      "Select at least one person"
+    );
+
+    return;
+
+  }
+
+  const shares = {};
+
+  if (splitMode === "even") {
+
+    const each =
+      amount / checks.length;
+
+    checks.forEach(
+      checkbox => {
+
+        shares[checkbox.value] =
+          each;
+
+      }
+    );
+
+  } else {
+
+    let totalShares = 0;
+
+    document
+      .querySelectorAll(
+        ".person-check"
+      )
+      .forEach(row => {
+
+        const checkbox =
+          row.querySelector(
+            ".split-check"
+          );
+
+        if (!checkbox.checked)
+          return;
+
+        const input =
+          row.querySelector(
+            ".share-input"
+          );
+
+        const value =
+          parseFloat(input.value) || 0;
+
+        shares[checkbox.value] =
+          value;
+
+        totalShares += value;
+
+      });
+
+    if (
+      Math.abs(
+        totalShares - amount
+      ) > 0.01
+    ) {
+
+      showToast(
+        "Custom shares must equal the total"
+      );
+
+      return;
+
+    }
+
+  }
+
+
+  expenses.push({
+
+    id:
+      Date.now(),
+
+    desc,
+
+    payer,
+
+    amount,
+
+    shares
+
+  });
+
+
+  document
+    .getElementById("descInput")
+    .value = "";
+
+  document
+    .getElementById("amountInput")
+    .value = "";
+
+
   saveData();
+
+  render();
+
+  showToast("Expense added");
+
 }
 
-function flashInvalid(id) {
-  const el = document.getElementById(id);
-  el.style.outline = '2px solid var(--red)';
-  setTimeout(() => { el.style.outline = ''; }, 900);
-}
 
 function removeExpense(id) {
-  expenses = expenses.filter(e => e.id !== id);
-  render();
+
+  expenses =
+    expenses.filter(
+      expense => expense.id !== id
+    );
+
   saveData();
+
+  render();
+
+  showToast("Expense removed");
+
 }
+
+
+/* =========================================================
+   BALANCES
+   ========================================================= */
 
 function computeBalances() {
+
   const balances = {};
-  people.forEach(p => balances[p] = 0);
-  expenses.forEach(e => {
-    if (!(e.payer in balances)) return;
-    balances[e.payer] += e.amount;
-    Object.entries(e.shares || {}).forEach(([p, amt]) => {
-      if (p in balances) balances[p] -= amt;
-    });
-  });
-  return balances;
-}
 
-function isEvenSplit(e) {
-  const vals = Object.values(e.shares || {});
-  if (vals.length === 0) return true;
-  const avg = e.amount / vals.length;
-  return vals.every(v => Math.abs(v - avg) < 0.01);
-}
-
-function buildSplitSection() {
-  const container = document.getElementById('splitWith');
-  const remainingEl = document.getElementById('splitRemaining');
-  container.innerHTML = '';
-
-  if (people.length === 0) {
-    container.innerHTML = '<span>Add people first</span>';
-    remainingEl.style.display = 'none';
-    return;
-  }
-
-  const amount = parseFloat(document.getElementById('amountInput').value) || 0;
-
-  if (splitMode === 'even') {
-    container.className = 'split-with';
-    people.forEach(p => {
-      const label = document.createElement('label');
-      const cb = document.createElement('input');
-      cb.type = 'checkbox';
-      cb.className = 'split-check';
-      cb.value = p;
-      cb.checked = true;
-      label.appendChild(cb);
-      label.appendChild(document.createTextNode(' ' + p));
-      container.appendChild(label);
-    });
-    remainingEl.style.display = 'none';
-  } else {
-    container.className = 'split-with custom';
-    const even = amount / people.length;
-    people.forEach(p => {
-      const row = document.createElement('div');
-      row.className = 'custom-row';
-
-      const label = document.createElement('label');
-      label.className = 'custom-check';
-      const cb = document.createElement('input');
-      cb.type = 'checkbox';
-      cb.className = 'split-check';
-      cb.value = p;
-      cb.checked = true;
-      cb.addEventListener('change', onCustomCheckToggle);
-      label.appendChild(cb);
-      label.appendChild(document.createTextNode(' ' + p));
-
-      const share = document.createElement('input');
-      share.type = 'number';
-      share.className = 'share-input';
-      share.min = '0';
-      share.step = '0.01';
-      share.value = even ? even.toFixed(2) : '';
-      share.addEventListener('input', updateRemaining);
-
-      row.appendChild(label);
-      row.appendChild(share);
-      container.appendChild(row);
-    });
-    remainingEl.style.display = 'block';
-    updateRemaining();
-  }
-}
-
-function refreshCustomAmounts() {
-  if (splitMode !== 'custom') return;
-  const amount = parseFloat(document.getElementById('amountInput').value) || 0;
-  const rows = Array.from(document.querySelectorAll('#splitWith .custom-row'));
-  const checkedRows = rows.filter(r => r.querySelector('.split-check').checked);
-  const even = checkedRows.length ? amount / checkedRows.length : 0;
-  checkedRows.forEach(row => {
-    row.querySelector('.share-input').value = even ? even.toFixed(2) : '';
-  });
-  updateRemaining();
-}
-
-function onCustomCheckToggle() {
-  const amount = parseFloat(document.getElementById('amountInput').value) || 0;
-  const rows = Array.from(document.querySelectorAll('#splitWith .custom-row'));
-  const checkedRows = rows.filter(r => r.querySelector('.split-check').checked);
-  const even = checkedRows.length ? amount / checkedRows.length : 0;
-  rows.forEach(row => {
-    const cb = row.querySelector('.split-check');
-    const share = row.querySelector('.share-input');
-    if (cb.checked) {
-      share.disabled = false;
-      share.value = even ? even.toFixed(2) : '';
-    } else {
-      share.disabled = true;
-      share.value = '';
+  people.forEach(
+    person => {
+      balances[person] = 0;
     }
+  );
+
+
+  expenses.forEach(expense => {
+
+    if (
+      !(expense.payer in balances)
+    ) return;
+
+
+    balances[expense.payer] +=
+      expense.amount;
+
+
+    Object.entries(
+      expense.shares || {}
+    ).forEach(
+      ([person, amount]) => {
+
+        if (person in balances) {
+
+          balances[person] -=
+            amount;
+
+        }
+
+      }
+    );
+
   });
-  updateRemaining();
+
+
+  return balances;
+
 }
 
-function updateRemaining() {
-  if (splitMode !== 'custom') return;
-  const remainingEl = document.getElementById('splitRemaining');
-  const amount = parseFloat(document.getElementById('amountInput').value) || 0;
-  const shareInputs = Array.from(document.querySelectorAll('#splitWith .share-input:not(:disabled)'));
-  const sum = shareInputs.reduce((s, i) => s + (parseFloat(i.value) || 0), 0);
-  const diff = amount - sum;
-  if (Math.abs(diff) < 0.01) {
-    remainingEl.textContent = 'Fully allocated ✓';
-    remainingEl.style.color = 'var(--green)';
-  } else if (diff > 0) {
-    remainingEl.textContent = fmt(diff) + ' left to allocate';
-    remainingEl.style.color = 'var(--red)';
-  } else {
-    remainingEl.textContent = fmt(Math.abs(diff)) + ' over the total';
-    remainingEl.style.color = 'var(--red)';
-  }
-}
 
-function simplifySettlements(balances) {
+/* =========================================================
+   SETTLEMENT ALGORITHM
+   ========================================================= */
+
+function simplifySettlements(
+  balances
+) {
+
   const creditors = [];
   const debtors = [];
-  Object.entries(balances).forEach(([p, bal]) => {
-    if (bal > 0.005) creditors.push({ p, bal });
-    else if (bal < -0.005) debtors.push({ p, bal: -bal });
-  });
-  creditors.sort((a, b) => b.bal - a.bal);
-  debtors.sort((a, b) => b.bal - a.bal);
 
-  const txns = [];
-  let i = 0, j = 0;
-  while (i < debtors.length && j < creditors.length) {
-    const pay = Math.min(debtors[i].bal, creditors[j].bal);
-    txns.push({ from: debtors[i].p, to: creditors[j].p, amt: pay });
-    debtors[i].bal -= pay;
-    creditors[j].bal -= pay;
-    if (debtors[i].bal < 0.005) i++;
-    if (creditors[j].bal < 0.005) j++;
+
+  Object.entries(
+    balances
+  ).forEach(
+    ([person, balance]) => {
+
+      if (balance > 0.005) {
+
+        creditors.push({
+          person,
+          amount: balance
+        });
+
+      }
+
+      else if (
+        balance < -0.005
+      ) {
+
+        debtors.push({
+          person,
+          amount: -balance
+        });
+
+      }
+
+    }
+  );
+
+
+  creditors.sort(
+    (a,b) =>
+      b.amount - a.amount
+  );
+
+  debtors.sort(
+    (a,b) =>
+      b.amount - a.amount
+  );
+
+
+  const transactions = [];
+
+  let i = 0;
+  let j = 0;
+
+
+  while (
+    i < debtors.length &&
+    j < creditors.length
+  ) {
+
+    const amount =
+      Math.min(
+        debtors[i].amount,
+        creditors[j].amount
+      );
+
+
+    transactions.push({
+
+      from:
+        debtors[i].person,
+
+      to:
+        creditors[j].person,
+
+      amount
+
+    });
+
+
+    debtors[i].amount -= amount;
+
+    creditors[j].amount -= amount;
+
+
+    if (
+      debtors[i].amount <
+      0.005
+    ) i++;
+
+
+    if (
+      creditors[j].amount <
+      0.005
+    ) j++;
+
   }
-  return txns;
+
+
+  return transactions;
+
 }
+
+
+/* =========================================================
+   SPLIT UI
+   ========================================================= */
+
+function buildSplitSection() {
+
+  const container =
+    document.getElementById(
+      "splitWith"
+    );
+
+  const remaining =
+    document.getElementById(
+      "splitRemaining"
+    );
+
+
+  container.innerHTML = "";
+
+
+  if (!people.length) {
+
+    container.innerHTML =
+      `<div class="empty">
+        Add people first
+      </div>`;
+
+    remaining.style.display =
+      "none";
+
+    return;
+
+  }
+
+
+  const amount =
+    parseFloat(
+      document
+        .getElementById(
+          "amountInput"
+        )
+        .value
+    ) || 0;
+
+
+  people.forEach(person => {
+
+    const row =
+      document.createElement(
+        "div"
+      );
+
+    row.className =
+      "person-check";
+
+
+    const left =
+      document.createElement(
+        "label"
+      );
+
+    left.className =
+      "person-check-left";
+
+
+    const checkbox =
+      document.createElement(
+        "input"
+      );
+
+    checkbox.type =
+      "checkbox";
+
+    checkbox.className =
+      "split-check";
+
+    checkbox.value =
+      person;
+
+    checkbox.checked =
+      true;
+
+
+    const name =
+      document.createTextNode(
+        person
+      );
+
+
+    left.appendChild(
+      checkbox
+    );
+
+    left.appendChild(
+      name
+    );
+
+
+    row.appendChild(
+      left
+    );
+
+
+    if (
+      splitMode === "custom"
+    ) {
+
+      const share =
+        document.createElement(
+          "input"
+        );
+
+      share.type =
+        "number";
+
+      share.className =
+        "share-input";
+
+      share.min = "0";
+
+      share.step = "0.01";
+
+      const each =
+        amount / people.length;
+
+      share.value =
+        each
+          ? each.toFixed(2)
+          : "";
+
+      share.addEventListener(
+        "input",
+        updateRemaining
+      );
+
+      checkbox.addEventListener(
+        "change",
+        () => {
+
+          share.disabled =
+            !checkbox.checked;
+
+          updateRemaining();
+
+        }
+      );
+
+      row.appendChild(
+        share
+      );
+
+    }
+
+
+    container.appendChild(
+      row
+    );
+
+  });
+
+
+  if (
+    splitMode === "custom"
+  ) {
+
+    remaining.style.display =
+      "block";
+
+    updateRemaining();
+
+  } else {
+
+    remaining.style.display =
+      "none";
+
+  }
+
+}
+
+
+/* =========================================================
+   CUSTOM SPLIT
+   ========================================================= */
+
+function updateRemaining() {
+
+  if (
+    splitMode !== "custom"
+  ) return;
+
+
+  const amount =
+    parseFloat(
+      document
+        .getElementById(
+          "amountInput"
+        )
+        .value
+    ) || 0;
+
+
+  const inputs =
+    Array.from(
+      document.querySelectorAll(
+        ".share-input"
+      )
+    )
+    .filter(
+      input => !input.disabled
+    );
+
+
+  const total =
+    inputs.reduce(
+      (sum, input) =>
+        sum +
+        (
+          parseFloat(
+            input.value
+          ) || 0
+        ),
+      0
+    );
+
+
+  const difference =
+    amount - total;
+
+
+  const element =
+    document.getElementById(
+      "splitRemaining"
+    );
+
+
+  if (
+    Math.abs(difference) <
+    0.01
+  ) {
+
+    element.textContent =
+      "✓ Fully allocated";
+
+    element.style.color =
+      "var(--green)";
+
+  }
+
+  else if (
+    difference > 0
+  ) {
+
+    element.textContent =
+      `${fmt(difference)} remaining`;
+
+    element.style.color =
+      "var(--yellow)";
+
+  }
+
+  else {
+
+    element.textContent =
+      `${fmt(Math.abs(difference))} over`;
+
+    element.style.color =
+      "var(--red)";
+
+  }
+
+}
+
+
+/* =========================================================
+   RENDER
+   ========================================================= */
 
 function render() {
-  // people chips
-  const chipsEl = document.getElementById('peopleChips');
-  chipsEl.innerHTML = '';
-  if (people.length === 0) {
-    chipsEl.innerHTML = '<div class="empty">Add everyone splitting the bill</div>';
-  }
-  people.forEach(p => {
-    const chip = document.createElement('div');
-    chip.className = 'chip';
-    chip.innerHTML = `${escapeHtml(p)} <button aria-label="Remove ${escapeHtml(p)}">×</button>`;
-    chip.querySelector('button').onclick = () => removePerson(p);
-    chipsEl.appendChild(chip);
-  });
 
-  // payer select
-  const payerSel = document.getElementById('payerInput');
-  const prevVal = payerSel.value;
-  payerSel.innerHTML = '<option value="">Paid by…</option>' +
-    people.map(p => `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`).join('');
-  if (people.includes(prevVal)) payerSel.value = prevVal;
+  renderPeople();
 
-  // expense list
-  const listEl = document.getElementById('expenseList');
-  listEl.innerHTML = '';
-  if (expenses.length === 0) {
-    listEl.innerHTML = '<div class="empty">No expenses yet — add the first one above</div>';
-  }
-  let total = 0;
-  expenses.forEach(e => {
-    total += e.amount;
-    const row = document.createElement('div');
-    row.className = 'item-row';
-    const n = Object.keys(e.shares || {}).length;
-    const splitLabel = isEvenSplit(e)
-      ? `split evenly, ${n} way${n === 1 ? '' : 's'}`
-      : `custom split, ${n} people`;
-    row.innerHTML = `
-      <div class="item" style="flex:1;">
-        <span class="desc">${escapeHtml(e.desc)}<span class="meta">paid by ${escapeHtml(e.payer)} · ${splitLabel}</span></span>
-        <span class="leader"></span>
-        <span class="amt">${fmt(e.amount)}</span>
-      </div>
-      <button class="remove" aria-label="Remove expense">✕</button>
-    `;
-    row.querySelector('.remove').onclick = () => removeExpense(e.id);
-    listEl.appendChild(row);
-  });
-  document.getElementById('totalAmt').textContent = fmt(total);
+  renderPayer();
 
-  // settlement
-  const settleEl = document.getElementById('settlementList');
-  settleEl.innerHTML = '';
-  const balances = computeBalances();
-  const txns = simplifySettlements(balances);
-  if (people.length === 0) {
-    settleEl.innerHTML = '<div class="empty">Nothing to settle yet</div>';
-  } else if (txns.length === 0) {
-    settleEl.innerHTML = '<div class="settled-wrap"><span class="stamp">All settled</span></div>';
-  } else {
-    txns.forEach(t => {
-      const line = document.createElement('div');
-      line.className = 'settle-line';
-      line.innerHTML = `<span>${escapeHtml(t.from)}</span><span class="arrow">→</span><span>${escapeHtml(t.to)}</span><span style="margin-left:auto; font-weight:700;">${fmt(t.amt)}</span>`;
-      settleEl.appendChild(line);
-    });
-  }
+  renderExpenses();
+
+  renderBalances();
+
+  renderSettlements();
 
   buildSplitSection();
+
+  updateDashboard();
+
 }
 
-function escapeHtml(str) {
-  const div = document.createElement('div');
-  div.textContent = str;
-  return div.innerHTML;
-}
 
-document.getElementById('addPersonBtn').onclick = addPerson;
-document.getElementById('personInput').addEventListener('keydown', e => {
-  if (e.key === 'Enter') { e.preventDefault(); addPerson(); }
-});
-document.getElementById('addExpenseBtn').onclick = addExpense;
+/* =========================================================
+   PEOPLE RENDER
+   ========================================================= */
 
-document.querySelectorAll('.split-mode').forEach(btn => {
-  btn.addEventListener('click', () => {
-    splitMode = btn.dataset.mode;
-    document.querySelectorAll('.split-mode').forEach(b => b.classList.toggle('active', b === btn));
-    buildSplitSection();
+function renderPeople() {
+
+  const container =
+    document.getElementById(
+      "peopleChips"
+    );
+
+  container.innerHTML = "";
+
+
+  document.getElementById(
+    "peopleCount"
+  ).textContent =
+    `${people.length} ${
+      people.length === 1
+        ? "member"
+        : "members"
+    }`;
+
+
+  if (!people.length) {
+
+    container.innerHTML =
+      `<div class="empty">
+        No people added yet
+      </div>`;
+
+    return;
+
+  }
+
+
+  people.forEach(person => {
+
+    const chip =
+      document.createElement(
+        "div"
+      );
+
+    chip.className =
+      "chip";
+
+
+    chip.innerHTML = `
+      <span>
+        ${escapeHtml(person)}
+      </span>
+
+      <button
+        class="chip-remove"
+        aria-label="Remove person"
+      >
+        ×
+      </button>
+    `;
+
+
+    chip
+      .querySelector(
+        ".chip-remove"
+      )
+      .onclick =
+        () =>
+          removePerson(person);
+
+
+    container.appendChild(
+      chip
+    );
+
   });
-});
 
-document.getElementById('amountInput').addEventListener('input', refreshCustomAmounts);
+}
+
+
+/* =========================================================
+   PAYER
+   ========================================================= */
+
+function renderPayer() {
+
+  const select =
+    document.getElementById(
+      "payerInput"
+    );
+
+  const previous =
+    select.value;
+
+
+  select.innerHTML =
+    `<option value="">
+      Select payer...
+    </option>`;
+
+
+  people.forEach(person => {
+
+    const option =
+      document.createElement(
+        "option"
+      );
+
+    option.value =
+      person;
+
+    option.textContent =
+      person;
+
+    select.appendChild(
+      option
+    );
+
+  });
+
+
+  if (
+    people.includes(previous)
+  ) {
+
+    select.value =
+      previous;
+
+  }
+
+}
+
+
+/* =========================================================
+   EXPENSE RENDER
+   ========================================================= */
+
+function renderExpenses() {
+
+  const container =
+    document.getElementById(
+      "expenseList"
+    );
+
+  container.innerHTML = "";
+
+
+  if (!expenses.length) {
+
+    container.innerHTML =
+      `<div class="empty">
+        No expenses yet.<br>
+        Add your first transaction.
+      </div>`;
+
+  }
+
+
+  let total = 0;
+
+
+  expenses.forEach(expense => {
+
+    total +=
+      expense.amount;
+
+
+    const item =
+      document.createElement(
+        "div"
+      );
+
+    item.className =
+      "expense";
+
+
+    const peopleCount =
+      Object.keys(
+        expense.shares || {}
+      ).length;
+
+
+    item.innerHTML = `
+
+      <div class="expense-main">
+
+        <div class="expense-name">
+          ${escapeHtml(expense.desc)}
+        </div>
+
+        <div class="expense-meta">
+          Paid by ${escapeHtml(expense.payer)}
+          · split between ${peopleCount}
+        </div>
+
+        <button
+          class="delete-btn"
+        >
+          Remove
+        </button>
+
+      </div>
+
+      <div class="expense-amount">
+        ${fmt(expense.amount)}
+      </div>
+
+    `;
+
+
+    item
+      .querySelector(
+        ".delete-btn"
+      )
+      .onclick =
+        () =>
+          removeExpense(
+            expense.id
+          );
+
+
+    container.appendChild(
+      item
+    );
+
+  });
+
+
+  document.getElementById(
+    "totalAmt"
+  ).textContent =
+    fmt(total);
+
+}
+
+
+/* =========================================================
+   BALANCE RENDER
+   ========================================================= */
+
+function renderBalances() {
+
+  const container =
+    document.getElementById(
+      "balanceList"
+    );
+
+  container.innerHTML = "";
+
+
+  if (!people.length) {
+
+    container.innerHTML =
+      `<div class="empty">
+        Add people to see balances.
+      </div>`;
+
+    return;
+
+  }
+
+
+  const balances =
+    computeBalances();
+
+
+  Object.entries(
+    balances
+  ).forEach(
+    ([person, balance]) => {
+
+      const row =
+        document.createElement(
+          "div"
+        );
+
+      row.className =
+        "balance-row";
+
+
+      let text;
+      let className;
+
+
+      if (
+        balance > 0.005
+      ) {
+
+        text =
+          `gets ${fmt(balance)}`;
+
+        className =
+          "balance-positive";
+
+      }
+
+      else if (
+        balance < -0.005
+      ) {
+
+        text =
+          `owes ${fmt(
+            Math.abs(balance)
+          )}`;
+
+        className =
+          "balance-negative";
+
+      }
+
+      else {
+
+        text =
+          "settled";
+
+        className =
+          "balance-zero";
+
+      }
+
+
+      row.innerHTML = `
+
+        <span>
+          ${escapeHtml(person)}
+        </span>
+
+        <span class="${className}">
+          ${text}
+        </span>
+
+      `;
+
+
+      container.appendChild(
+        row
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   SETTLEMENT RENDER
+   ========================================================= */
+
+function renderSettlements() {
+
+  const container =
+    document.getElementById(
+      "settlementList"
+    );
+
+  container.innerHTML = "";
+
+
+  if (!people.length) {
+
+    container.innerHTML =
+      `<div class="empty">
+        Add people to calculate settlements.
+      </div>`;
+
+    return;
+
+  }
+
+
+  const balances =
+    computeBalances();
+
+
+  const transactions =
+    simplifySettlements(
+      balances
+    );
+
+
+  if (!transactions.length) {
+
+    container.innerHTML = `
+
+      <div class="all-settled">
+
+        <div class="all-settled-icon">
+          ✓
+        </div>
+
+        Everyone is settled up
+
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  transactions.forEach(
+    transaction => {
+
+      const row =
+        document.createElement(
+          "div"
+        );
+
+      row.className =
+        "settle";
+
+
+      row.innerHTML = `
+
+        <span class="settle-person">
+          ${escapeHtml(
+            transaction.from
+          )}
+        </span>
+
+        <span class="arrow">
+          →
+        </span>
+
+        <span class="settle-person">
+          ${escapeHtml(
+            transaction.to
+          )}
+        </span>
+
+        <span class="settle-amount">
+          ${fmt(
+            transaction.amount
+          )}
+        </span>
+
+      `;
+
+
+      container.appendChild(
+        row
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   DASHBOARD
+   ========================================================= */
+
+function updateDashboard() {
+
+  const total =
+    expenses.reduce(
+      (sum, expense) =>
+        sum + expense.amount,
+      0
+    );
+
+
+  document.getElementById(
+    "totalStat"
+  ).textContent =
+    fmt(total);
+
+
+  document.getElementById(
+    "peopleStat"
+  ).textContent =
+    people.length;
+
+
+  document.getElementById(
+    "expenseStat"
+  ).textContent =
+    expenses.length;
+
+}
+
+
+/* =========================================================
+   CLEAR ALL
+   ========================================================= */
+
+document
+  .getElementById("clearBtn")
+  .onclick =
+    () => {
+
+      if (!people.length &&
+          !expenses.length) {
+
+        showToast(
+          "Nothing to clear"
+        );
+
+        return;
+
+      }
+
+
+      if (
+        !confirm(
+          "Delete all people and expenses?"
+        )
+      ) return;
+
+
+      people = [];
+
+      expenses = [];
+
+      saveData();
+
+      render();
+
+      showToast(
+        "Ledger cleared"
+      );
+
+    };
+
+
+/* =========================================================
+   EVENT LISTENERS
+   ========================================================= */
+
+document
+  .getElementById(
+    "addPersonBtn"
+  )
+  .onclick =
+    addPerson;
+
+
+document
+  .getElementById(
+    "personInput"
+  )
+  .addEventListener(
+    "keydown",
+    event => {
+
+      if (
+        event.key === "Enter"
+      ) {
+
+        event.preventDefault();
+
+        addPerson();
+
+      }
+
+    }
+  );
+
+
+document
+  .getElementById(
+    "addExpenseBtn"
+  )
+  .onclick =
+    addExpense;
+
+
+document
+  .getElementById(
+    "amountInput"
+  )
+  .addEventListener(
+    "input",
+    () => {
+
+      buildSplitSection();
+
+    }
+  );
+
+
+document
+  .querySelectorAll(
+    ".split-mode"
+  )
+  .forEach(button => {
+
+    button.addEventListener(
+      "click",
+      () => {
+
+        splitMode =
+          button.dataset.mode;
+
+
+        document
+          .querySelectorAll(
+            ".split-mode"
+          )
+          .forEach(
+            item =>
+              item.classList.toggle(
+                "active",
+                item === button
+              )
+          );
+
+
+        buildSplitSection();
+
+      }
+    );
+
+  });
+
+
+/* =========================================================
+   START
+   ========================================================= */
 
 loadData();
+
 </script>
 
 </body>
