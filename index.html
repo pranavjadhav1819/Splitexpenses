@@ -7,328 +7,305 @@
 
 <title>TALLY — Smart Expense Splitter</title>
 
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&family=Fraunces:ital,wght@0,600;0,700;1,500;1,600&family=Baloo+2:wght@600;700;800&family=Bebas+Neue&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
+/* =========================================================
+   CSS CUSTOM PROPERTIES
+   ========================================================= */
 :root {
   --bg: #080a0f;
   --bg-2: #0e1118;
-  --card: rgba(20, 24, 33, 0.78);
+  --card: rgba(20, 24, 33, 0.72);
   --card-strong: #151923;
   --border: rgba(255,255,255,.09);
+  --border-glow: rgba(124,92,255,.12);
 
   --text: #f5f7fa;
   --muted: #8b93a3;
 
   --primary: #7c5cff;
   --primary-2: #9b85ff;
+  --primary-3: #b8a4ff;
+  --cyan: #36d1dc;
   --green: #38d996;
   --red: #ff5f6d;
   --yellow: #ffc857;
   --on-primary: #ffffff;
 
   --shadow: 0 25px 80px rgba(0,0,0,.45);
+  --shadow-glow: 0 0 60px rgba(124,92,255,.08);
 
   --radius: 20px;
 
-  --font-display: 'DM Sans', sans-serif;
-  --pattern:
-    linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px);
-  --pattern-size: 40px 40px;
+  /* category colors */
+  --cat-food: #ff7eb3;
+  --cat-travel: #36d1dc;
+  --cat-hotel: #ffc857;
+  --cat-shopping: #9b85ff;
+  --cat-fuel: #ff9f43;
+  --cat-other: #8b93a3;
+}
+
+html[data-mode="light"] {
+  --bg: #f5f6fb;
+  --bg-2: #eceef5;
+  --card: rgba(255,255,255,.82);
+  --card-strong: #ffffff;
+  --border: rgba(20,24,40,.1);
+  --border-glow: rgba(124,92,255,.08);
+
+  --text: #1b1f2a;
+  --muted: #666f80;
+
+  --shadow: 0 20px 60px rgba(30,30,60,.12);
+  --shadow-glow: 0 0 40px rgba(124,92,255,.05);
 }
 
 /* =========================================================
-   THEMES
+   ANIMATED PARTICLE CANVAS
    ========================================================= */
-
-html[data-theme="night"] {
-  --bg:#080a0f; --bg-2:#0e1118; --card: rgba(20,24,33,.78); --card-strong:#151923; --border: rgba(255,255,255,.09);
-  --text:#f5f7fa; --muted:#8b93a3;
-  --primary:#7c5cff; --primary-2:#9b85ff; --green:#38d996; --red:#ff5f6d; --yellow:#ffc857; --on-primary:#ffffff;
-  --font-display: 'DM Sans', sans-serif;
-  --pattern: linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px);
-  --pattern-size: 40px 40px;
-}
-
-html[data-theme="trip"] {
-  --bg:#0f1821; --bg-2:#0b131b; --card: rgba(22,33,45,.78); --card-strong:#182634; --border: rgba(255,255,255,.09);
-  --text:#f2ede1; --muted:#93a3ae;
-  --primary:#ff7a59; --primary-2:#ffb088; --green:#2dd4bf; --red:#ff5f6d; --yellow:#ffcf6b; --on-primary:#0d1620;
-  --font-display: 'Bebas Neue', sans-serif;
-  --pattern:
-    radial-gradient(circle at 15% 25%, rgba(255,255,255,.06) 1.5px, transparent 1.5px),
-    radial-gradient(circle at 65% 70%, rgba(255,255,255,.05) 1.5px, transparent 1.5px),
-    repeating-linear-gradient(115deg, rgba(255,255,255,.035) 0 2px, transparent 2px 16px);
-  --pattern-size: 140px 140px, 170px 170px, auto;
-}
-
-html[data-theme="picnic"] {
-  --bg:#faf3e6; --bg-2:#f5ead6; --card: rgba(255,255,255,.72); --card-strong:#fffaf0; --border: rgba(90,60,20,.14);
-  --text:#3c2a1a; --muted:#8a7256;
-  --primary:#7c9a4c; --primary-2:#9cb96a; --green:#557a3a; --red:#c1440e; --yellow:#e0a63a; --on-primary:#1e2a12;
-  --font-display: 'Baloo 2', sans-serif;
-  --pattern:
-    repeating-linear-gradient(0deg, rgba(193,68,14,.06) 0 8px, transparent 8px 32px),
-    repeating-linear-gradient(90deg, rgba(193,68,14,.06) 0 8px, transparent 8px 32px);
-  --pattern-size: 32px 32px, 32px 32px;
-}
-
-html[data-theme="dinner"] {
-  --bg:#241019; --bg-2:#1b0c12; --card: rgba(42,20,29,.75); --card-strong:#33161f; --border: rgba(201,162,75,.18);
-  --text:#f3e9dc; --muted:#b09a8a;
-  --primary:#c9a24b; --primary-2:#e0bd6e; --green:#7a9b6e; --red:#d1495b; --yellow:#e0bd6e; --on-primary:#241019;
-  --font-display: 'Fraunces', serif;
-  --pattern:
-    radial-gradient(circle at 18% 22%, rgba(201,162,75,.14), transparent 35%),
-    radial-gradient(circle at 82% 58%, rgba(201,162,75,.10), transparent 32%),
-    radial-gradient(circle at 50% 92%, rgba(209,73,91,.08), transparent 35%);
-  --pattern-size: auto;
-}
-
-html[data-theme="expenses"] {
-  --bg:#eef1f4; --bg-2:#e4e9ee; --card: rgba(255,255,255,.82); --card-strong:#ffffff; --border: rgba(30,40,50,.14);
-  --text:#212a33; --muted:#66727d;
-  --primary:#5b7083; --primary-2:#7c93a6; --green:#3f8f5f; --red:#c1443c; --yellow:#b8862f; --on-primary:#ffffff;
-  --font-display: 'Space Mono', monospace;
-  --pattern: repeating-linear-gradient(rgba(30,40,50,.07) 0 1px, transparent 1px 28px);
-  --pattern-size: 100% 28px;
-}
-
-html[data-theme="drinks"] {
-  --bg:#1c1310; --bg-2:#140d0a; --card: rgba(38,26,18,.78); --card-strong:#2b1c12; --border: rgba(224,149,43,.18);
-  --text:#f2e6d3; --muted:#a68f76;
-  --primary:#e0952b; --primary-2:#f2b558; --green:#9caa3c; --red:#c1443c; --yellow:#f2b558; --on-primary:#201409;
-  --font-display: 'Oswald', sans-serif;
-  --pattern:
-    radial-gradient(circle at 10% 82%, rgba(224,149,43,.11) 3px, transparent 3px),
-    radial-gradient(circle at 25% 58%, rgba(224,149,43,.08) 2px, transparent 2px),
-    radial-gradient(circle at 42% 88%, rgba(224,149,43,.10) 2.5px, transparent 2.5px),
-    radial-gradient(circle at 62% 52%, rgba(224,149,43,.07) 2px, transparent 2px),
-    radial-gradient(circle at 80% 76%, rgba(224,149,43,.09) 3px, transparent 3px),
-    radial-gradient(circle at 92% 38%, rgba(224,149,43,.06) 2px, transparent 2px);
-  --pattern-size: auto;
-}
-
-html[data-theme="pub"] {
-  --bg:#20150e; --bg-2:#170f09; --card: rgba(38,27,17,.78); --card-strong:#2a1c10; --border: rgba(184,135,60,.2);
-  --text:#efe3cf; --muted:#a08a6c;
-  --primary:#b8873c; --primary-2:#d1a656; --green:#4f6f4f; --red:#8c2f2f; --yellow:#d1a656; --on-primary:#1c130b;
-  --font-display: 'Oswald', sans-serif;
-  --pattern:
-    repeating-linear-gradient(45deg, rgba(184,135,60,.06) 0 2px, transparent 2px 26px),
-    repeating-linear-gradient(-45deg, rgba(184,135,60,.06) 0 2px, transparent 2px 26px);
-  --pattern-size: 26px 26px, 26px 26px;
-}
-
-html[data-theme="love"] {
-  --bg:#2a1420; --bg-2:#1f0f18; --card: rgba(53,25,38,.75); --card-strong:#3d1c2c; --border: rgba(232,180,187,.2);
-  --text:#f9e9ee; --muted:#c9a0ac;
-  --primary:#d94f6c; --primary-2:#f28aa0; --green:#8fae87; --red:#d94f6c; --yellow:#e8b4bb; --on-primary:#ffffff;
-  --font-display: 'Fraunces', serif;
-  --pattern:
-    radial-gradient(circle at 12% 18%, rgba(217,79,108,.12) 2px, transparent 2px),
-    radial-gradient(circle at 34% 62%, rgba(217,79,108,.09) 1.5px, transparent 1.5px),
-    radial-gradient(circle at 58% 22%, rgba(217,79,108,.10) 2px, transparent 2px),
-    radial-gradient(circle at 78% 68%, rgba(217,79,108,.08) 1.5px, transparent 1.5px),
-    radial-gradient(circle at 90% 34%, rgba(217,79,108,.09) 2px, transparent 2px);
-  --pattern-size: auto;
-}
-
-html[data-theme="friends"] {
-  --bg:#fdf8f0; --bg-2:#faf1e0; --card: rgba(255,255,255,.8); --card-strong:#ffffff; --border: rgba(40,30,10,.12);
-  --text:#2c2416; --muted:#8a7d63;
-  --primary:#ff6f91; --primary-2:#ffcb47; --green:#3d8fbd; --red:#ff6f91; --yellow:#ffcb47; --on-primary:#2c1420;
-  --font-display: 'Baloo 2', sans-serif;
-  --pattern:
-    radial-gradient(circle at 8% 20%, rgba(255,111,145,.16) 3px, transparent 3px),
-    radial-gradient(circle at 22% 55%, rgba(255,203,71,.18) 2.5px, transparent 2.5px),
-    radial-gradient(circle at 40% 15%, rgba(78,168,222,.16) 3px, transparent 3px),
-    radial-gradient(circle at 55% 70%, rgba(255,111,145,.14) 2px, transparent 2px),
-    radial-gradient(circle at 68% 30%, rgba(255,203,71,.16) 3px, transparent 3px),
-    radial-gradient(circle at 85% 60%, rgba(78,168,222,.14) 2.5px, transparent 2.5px),
-    radial-gradient(circle at 92% 20%, rgba(255,111,145,.12) 2px, transparent 2px);
-  --pattern-size: auto;
-}
-
-html[data-theme="money"] {
-  --bg:#0e2a1f; --bg-2:#0a2017; --card: rgba(18,42,32,.78); --card-strong:#163527; --border: rgba(201,178,90,.2);
-  --text:#eef2e6; --muted:#9db29e;
-  --primary:#c9a227; --primary-2:#e6c65a; --green:#3f9e6d; --red:#c1443c; --yellow:#e6c65a; --on-primary:#0e2a1f;
-  --font-display: 'Space Mono', monospace;
-  --pattern:
-    repeating-radial-gradient(circle at 50% 0%, rgba(201,162,39,.06) 0 2px, transparent 2px 10px),
-    repeating-linear-gradient(0deg, rgba(201,162,39,.04) 0 1px, transparent 1px 6px);
-  --pattern-size: auto;
-}
-
-/* theme-specific type flourishes */
-html[data-theme="trip"] .brand h1, html[data-theme="trip"] .card-title h2 { text-transform: uppercase; letter-spacing: .06em; }
-html[data-theme="drinks"] .brand h1, html[data-theme="drinks"] .card-title h2,
-html[data-theme="pub"] .brand h1, html[data-theme="pub"] .card-title h2 { text-transform: uppercase; letter-spacing: .04em; }
-html[data-theme="dinner"] .brand h1, html[data-theme="dinner"] .card-title h2 { font-weight: 700; }
-html[data-theme="love"] .brand h1, html[data-theme="love"] .card-title h2 { font-style: italic; font-weight: 600; }
-html[data-theme="money"] .brand h1, html[data-theme="money"] .card-title h2 { letter-spacing: .04em; }
-
-/* rupee watermark — money theme only */
-.currency-watermark {
+#particleCanvas {
   position: fixed;
   inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'Space Mono', monospace;
-  font-weight: 700;
-  font-size: min(45vw, 480px);
-  color: var(--primary);
-  opacity: 0;
-  pointer-events: none;
   z-index: 0;
-  transition: opacity .4s ease;
-  user-select: none;
-}
-html[data-theme="money"] .currency-watermark { opacity: .05; }
-
-/* thematic floating scene */
-@keyframes floatIcon {
-  0%, 100% { transform: translateY(0) rotate(var(--icon-rot, 0deg)); }
-  50% { transform: translateY(-16px) rotate(var(--icon-rot, 0deg)); }
-}
-
-.theme-scene {
-  position: fixed;
-  inset: 0;
   pointer-events: none;
-  z-index: 0;
-  --icon-rot: 0deg;
-}
-
-.theme-icon {
-  position: absolute;
-  color: var(--primary);
-  fill: none;
-  animation: floatIcon 9s ease-in-out infinite;
-  transition: opacity .4s ease, color .3s ease;
-}
-
-.theme-icon svg {
   width: 100%;
   height: 100%;
-  display: block;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: .6;
-  stroke-linecap: round;
-  stroke-linejoin: round;
 }
 
-.theme-icon.icon-a {
-  bottom: -10%;
-  right: -8%;
-  width: min(58vw, 620px);
-  height: min(58vw, 620px);
-  opacity: .08;
-  animation-duration: 11s;
-}
-
-.theme-icon.icon-b {
-  top: 10%;
-  left: -6%;
-  width: min(26vw, 230px);
-  height: min(26vw, 230px);
-  opacity: .06;
-  animation-duration: 8s;
-  animation-delay: -3s;
-}
-
-.theme-icon.icon-c {
-  top: 58%;
-  right: 5%;
-  width: min(16vw, 150px);
-  height: min(16vw, 150px);
-  opacity: .05;
-  animation-duration: 7s;
-  animation-delay: -1.4s;
-}
-
-html[data-theme="night"] .theme-icon,
-html[data-theme="money"] .theme-icon {
-  opacity: 0;
-}
-
-@media (max-width: 700px) {
-
-  .theme-icon.icon-a {
-    width: 80vw;
-    height: 80vw;
-    bottom: -14%;
-    right: -20%;
-    opacity: .06;
-  }
-
-  .theme-icon.icon-b,
-  .theme-icon.icon-c {
-    display: none;
-  }
-
-}
-
-/* settle-up celebration */
-@keyframes popFloat {
-  0% { transform: translateY(0) scale(.6); opacity: 0; }
-  15% { opacity: 1; transform: translateY(-10px) scale(1); }
-  100% { transform: translateY(-140px) scale(1); opacity: 0; }
-}
-
-.celebrate-piece {
+/* =========================================================
+   NOISE GRAIN OVERLAY
+   ========================================================= */
+.noise-overlay {
   position: fixed;
-  bottom: 80px;
+  inset: 0;
+  z-index: 0;
   pointer-events: none;
-  z-index: 90;
-  animation: popFloat 1.6s ease-out forwards;
+  opacity: .035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 200px 200px;
 }
 
-* {
-  box-sizing: border-box;
+html[data-mode="light"] .noise-overlay {
+  opacity: .025;
 }
 
-html {
-  scroll-behavior: smooth;
+/* =========================================================
+   AURORA BACKGROUND (enhanced)
+   ========================================================= */
+@keyframes auroraDrift1 {
+  0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); }
+  33% { transform: translate(6%, 8%) scale(1.18) rotate(3deg); }
+  66% { transform: translate(-3%, 4%) scale(1.05) rotate(-2deg); }
 }
+
+@keyframes auroraDrift2 {
+  0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); }
+  33% { transform: translate(-8%, -6%) scale(1.14) rotate(-4deg); }
+  66% { transform: translate(5%, -2%) scale(.95) rotate(2deg); }
+}
+
+@keyframes auroraDrift3 {
+  0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); }
+  33% { transform: translate(-6%, 9%) scale(.92) rotate(5deg); }
+  66% { transform: translate(4%, -5%) scale(1.08) rotate(-3deg); }
+}
+
+@keyframes auroraDrift4 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(5%, -7%) scale(1.1); }
+}
+
+.aurora {
+  position: fixed;
+  inset: -15%;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.aurora span {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: .45;
+  mix-blend-mode: screen;
+  transition: opacity .4s ease;
+}
+
+html[data-mode="light"] .aurora span {
+  opacity: .22;
+  mix-blend-mode: multiply;
+  filter: blur(100px);
+}
+
+.aurora .b1 {
+  width: 50vw; height: 50vw;
+  top: -10%; left: -10%;
+  background: radial-gradient(circle, var(--primary), transparent 70%);
+  animation: auroraDrift1 22s ease-in-out infinite;
+}
+
+.aurora .b2 {
+  width: 45vw; height: 45vw;
+  bottom: -14%; right: -12%;
+  background: radial-gradient(circle, var(--green), transparent 70%);
+  animation: auroraDrift2 26s ease-in-out infinite;
+}
+
+.aurora .b3 {
+  width: 36vw; height: 36vw;
+  top: 30%; right: 16%;
+  background: radial-gradient(circle, var(--yellow), transparent 70%);
+  animation: auroraDrift3 18s ease-in-out infinite;
+}
+
+.aurora .b4 {
+  width: 30vw; height: 30vw;
+  bottom: 20%; left: 25%;
+  background: radial-gradient(circle, var(--cyan), transparent 70%);
+  animation: auroraDrift4 24s ease-in-out infinite;
+  opacity: .3;
+}
+
+/* =========================================================
+   CONFETTI & CELEBRATION
+   ========================================================= */
+#confettiCanvas {
+  position: fixed;
+  inset: 0;
+  z-index: 95;
+  pointer-events: none;
+  width: 100%;
+  height: 100%;
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 20px rgba(56,217,150,.1), inset 0 0 20px rgba(56,217,150,.03); }
+  50% { box-shadow: 0 0 40px rgba(56,217,150,.2), inset 0 0 30px rgba(56,217,150,.06); }
+}
+
+/* =========================================================
+   BASE RESET & BODY
+   ========================================================= */
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
 
 body {
   margin: 0;
   min-height: 100vh;
   position: relative;
   z-index: 1;
-  background:
-    radial-gradient(circle at 10% 10%, color-mix(in srgb, var(--primary) 16%, transparent), transparent 30%),
-    radial-gradient(circle at 90% 80%, color-mix(in srgb, var(--green) 10%, transparent), transparent 30%),
-    var(--bg);
-
+  background: var(--bg);
   color: var(--text);
   font-family: "DM Sans", sans-serif;
-  transition: background-color .3s ease, color .3s ease;
+  transition: background-color .4s ease, color .4s ease;
+  overflow-x: hidden;
 }
 
-/* ---------- Background decoration ---------- */
+/* custom scrollbar */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(124,92,255,.25);
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(124,92,255,.4); }
 
+/* grid background */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
   pointer-events: none;
-
-  background-image: var(--pattern);
-  background-size: var(--pattern-size);
-
-  mask-image: linear-gradient(to bottom, black, transparent);
-  transition: background-image .3s ease;
+  z-index: 0;
+  background-image:
+    linear-gradient(rgba(127,127,127,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(127,127,127,.04) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: linear-gradient(to bottom, black 20%, transparent 80%);
 }
 
-/* ---------- App ---------- */
+/* =========================================================
+   GRADIENT TEXT UTILITY
+   ========================================================= */
+.gradient-text {
+  background: linear-gradient(135deg, var(--primary), var(--primary-2), var(--cyan));
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradientShift 6s ease infinite;
+}
 
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* =========================================================
+   REVEAL ANIMATIONS (scroll-triggered)
+   ========================================================= */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity .7s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1);
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* staggered delays */
+.reveal-delay-1 { transition-delay: .08s; }
+.reveal-delay-2 { transition-delay: .16s; }
+.reveal-delay-3 { transition-delay: .24s; }
+.reveal-delay-4 { transition-delay: .32s; }
+.reveal-delay-5 { transition-delay: .40s; }
+
+/* =========================================================
+   RIPPLE EFFECT
+   ========================================================= */
+.ripple-host { position: relative; overflow: hidden; }
+
+.ripple-circle {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255,255,255,.25);
+  transform: scale(0);
+  animation: rippleExpand .55s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes rippleExpand {
+  to { transform: scale(4); opacity: 0; }
+}
+
+/* =========================================================
+   SHAKE ANIMATION (validation errors)
+   ========================================================= */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+
+.shake { animation: shake .4s ease; }
+
+/* =========================================================
+   APP LAYOUT
+   ========================================================= */
 .app {
   width: min(1100px, calc(100% - 30px));
   margin: 0 auto;
@@ -337,8 +314,9 @@ body::before {
   z-index: 1;
 }
 
-/* ---------- Header ---------- */
-
+/* =========================================================
+   HEADER
+   ========================================================= */
 .topbar {
   display: flex;
   align-items: center;
@@ -353,121 +331,165 @@ body::before {
 }
 
 .logo {
-  width: 46px;
-  height: 46px;
-
-  display: grid;
-  place-items: center;
-
-  border-radius: 14px;
-
+  width: 48px; height: 48px;
+  display: grid; place-items: center;
+  border-radius: 15px;
   background: linear-gradient(135deg, var(--primary), var(--primary-2));
-
-  box-shadow: 0 10px 35px color-mix(in srgb, var(--primary) 35%, transparent);
-
+  box-shadow: 0 10px 35px color-mix(in srgb, var(--primary) 40%, transparent);
   font-family: "Space Mono", monospace;
-  font-weight: 700;
-  font-size: 19px;
+  font-weight: 700; font-size: 20px;
   color: var(--on-primary);
-  transition: background .3s ease, box-shadow .3s ease, color .3s ease;
+  transition: transform .3s ease, box-shadow .3s ease;
+  position: relative;
 }
+
+.logo::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 17px;
+  background: linear-gradient(135deg, var(--primary), var(--cyan), var(--primary-2));
+  z-index: -1;
+  opacity: .5;
+  filter: blur(8px);
+  animation: gradientShift 4s ease infinite;
+  background-size: 200% 200%;
+}
+
+.logo:hover { transform: rotate(-5deg) scale(1.05); }
 
 .brand h1 {
   margin: 0;
-  font-size: 22px;
+  font-size: 24px;
   letter-spacing: -.5px;
-  font-family: var(--font-display);
-  transition: font-family .2s ease;
+  font-weight: 700;
 }
 
 .brand p {
   margin: 3px 0 0;
   color: var(--muted);
   font-size: 12px;
+  min-height: 1.2em;
+}
+
+/* typing cursor */
+.typing-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  background: var(--primary);
+  margin-left: 2px;
+  animation: blink .7s step-end infinite;
+  vertical-align: text-bottom;
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
 }
 
 .status {
   display: flex;
   align-items: center;
   gap: 7px;
-
-  padding: 8px 12px;
-
+  padding: 8px 14px;
   border: 1px solid var(--border);
   background: color-mix(in srgb, var(--text) 5%, transparent);
   border-radius: 999px;
-
   color: var(--muted);
   font-size: 11px;
+  backdrop-filter: blur(10px);
 }
 
 .status-dot {
-  width: 7px;
-  height: 7px;
+  width: 7px; height: 7px;
   border-radius: 50%;
   background: var(--green);
   box-shadow: 0 0 12px var(--green);
+  animation: statusPulse 2.5s ease-in-out infinite;
 }
 
-/* ---------- Dashboard ---------- */
+@keyframes statusPulse {
+  0%, 100% { box-shadow: 0 0 8px var(--green); }
+  50% { box-shadow: 0 0 18px var(--green), 0 0 30px rgba(56,217,150,.2); }
+}
 
+/* =========================================================
+   DASHBOARD STAT CARDS
+   ========================================================= */
 .dashboard {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 14px;
   margin-bottom: 20px;
+  perspective: 800px;
 }
 
 .stat-card {
   position: relative;
   overflow: hidden;
-
-  padding: 20px;
-
+  padding: 22px;
   border: 1px solid var(--border);
   background: var(--card);
-
   border-radius: var(--radius);
+  backdrop-filter: blur(24px);
+  box-shadow: var(--shadow), var(--shadow-glow);
+  transition: transform .15s ease, box-shadow .25s ease, border-color .25s ease;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
 
-  backdrop-filter: blur(18px);
+.stat-card:hover {
+  border-color: var(--border-glow);
+  box-shadow: var(--shadow), 0 0 40px rgba(124,92,255,.1);
+}
 
-  box-shadow: var(--shadow);
+/* inner glow accent */
+.stat-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, rgba(124,92,255,.06) 0%, transparent 50%);
+  pointer-events: none;
 }
 
 .stat-card::after {
   content: "";
   position: absolute;
-  width: 120px;
-  height: 120px;
-
-  right: -50px;
-  top: -60px;
-
+  width: 140px; height: 140px;
+  right: -55px; top: -65px;
   border-radius: 50%;
-
-  background: color-mix(in srgb, var(--primary) 10%, transparent);
+  background: radial-gradient(circle, color-mix(in srgb, var(--primary) 12%, transparent), transparent 70%);
+  pointer-events: none;
 }
 
 .stat-label {
   color: var(--muted);
-  font-size: 12px;
-  margin-bottom: 9px;
+  font-size: 11px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
 }
 
 .stat-value {
   font-family: "Space Mono", monospace;
-  font-size: 25px;
+  font-size: 28px;
   font-weight: 700;
+  background: linear-gradient(135deg, var(--text), var(--primary-2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .stat-small {
   color: var(--muted);
-  font-size: 11px;
-  margin-top: 7px;
+  font-size: 10px;
+  margin-top: 8px;
 }
 
-/* ---------- Main grid ---------- */
-
+/* =========================================================
+   MAIN GRID
+   ========================================================= */
 .main-grid {
   display: grid;
   grid-template-columns: 390px 1fr;
@@ -475,75 +497,78 @@ body::before {
   align-items: start;
 }
 
+/* =========================================================
+   CARDS (glassmorphism 2.0)
+   ========================================================= */
 .card {
+  position: relative;
   border: 1px solid var(--border);
   background: var(--card);
-
   border-radius: var(--radius);
-
-  backdrop-filter: blur(18px);
-
-  box-shadow: var(--shadow);
-
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  box-shadow: var(--shadow), var(--shadow-glow);
   padding: 22px;
+  transition: border-color .3s ease, box-shadow .3s ease;
 }
 
-.card + .card {
-  margin-top: 18px;
+/* subtle top-edge shine */
+.card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 20px; right: 20px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.12), transparent);
+  pointer-events: none;
 }
+
+.card:hover {
+  border-color: var(--border-glow);
+}
+
+.card + .card { margin-top: 18px; }
 
 .card-title {
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   margin-bottom: 18px;
 }
 
-.card-title h2 {
-  margin: 0;
-  font-size: 16px;
-  font-family: var(--font-display);
-  transition: font-family .2s ease;
-}
+.card-title h2 { margin: 0; font-size: 16px; }
 
 .card-title span {
   color: var(--muted);
-  font-size: 11px;
+  font-size: 10px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
 }
 
-/* ---------- Inputs ---------- */
-
-.form-group {
-  margin-bottom: 12px;
-}
+/* =========================================================
+   INPUTS
+   ========================================================= */
+.form-group { margin-bottom: 12px; }
 
 label.field-label {
   display: block;
-
   color: var(--muted);
-  font-size: 11px;
-
+  font-size: 10px;
+  letter-spacing: .05em;
+  text-transform: uppercase;
   margin-bottom: 7px;
 }
 
-input,
-select {
+input, select {
   width: 100%;
-
   border: 1px solid var(--border);
-  background: color-mix(in srgb, var(--text) 6%, transparent);
-
+  background: color-mix(in srgb, var(--text) 5%, transparent);
   color: var(--text);
-
-  padding: 12px 13px;
-
-  border-radius: 11px;
-
+  padding: 12px 14px;
+  border-radius: 12px;
   font-family: inherit;
   font-size: 13px;
-
-  transition: .2s;
+  transition: border-color .25s, box-shadow .25s, background .25s;
+  backdrop-filter: blur(6px);
 }
 
 select option {
@@ -553,78 +578,123 @@ select option {
 
 input::placeholder {
   color: var(--muted);
-  opacity: .8;
+  opacity: .7;
 }
 
-input:focus,
-select:focus {
+input:focus, select:focus {
   outline: none;
   border-color: color-mix(in srgb, var(--primary) 70%, transparent);
-
-  box-shadow:
-    0 0 0 3px color-mix(in srgb, var(--primary) 12%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 12%, transparent),
+              0 0 20px color-mix(in srgb, var(--primary) 8%, transparent);
 }
 
-/* ---------- Buttons ---------- */
-
+/* =========================================================
+   BUTTONS
+   ========================================================= */
 button {
   border: 0;
-
   font-family: inherit;
   font-weight: 600;
-
   cursor: pointer;
-
-  transition:
-    transform .15s,
-    box-shadow .15s,
-    background .15s;
+  transition: transform .15s, box-shadow .2s, background .2s, color .2s;
 }
 
-button:active {
-  transform: scale(.97);
-}
+button:active { transform: scale(.96); }
 
 .primary-btn {
   width: 100%;
-
-  padding: 12px 15px;
-
-  border-radius: 11px;
-
+  padding: 13px 16px;
+  border-radius: 12px;
   background: linear-gradient(135deg, var(--primary), var(--primary-2));
-
   color: var(--on-primary);
+  font-size: 14px;
+  letter-spacing: .02em;
+  box-shadow: 0 10px 30px color-mix(in srgb, var(--primary) 25%, transparent);
+  position: relative;
+  overflow: hidden;
+}
 
-  box-shadow: 0 10px 25px color-mix(in srgb, var(--primary) 22%, transparent);
+.primary-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent 30%, rgba(255,255,255,.12) 50%, transparent 70%);
+  background-size: 200% 100%;
+  animation: btnSheen 3s ease-in-out infinite;
+}
+
+@keyframes btnSheen {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
 .primary-btn:hover {
-  box-shadow: 0 13px 30px color-mix(in srgb, var(--primary) 38%, transparent);
-  transform: translateY(-1px);
+  box-shadow: 0 14px 40px color-mix(in srgb, var(--primary) 40%, transparent);
+  transform: translateY(-2px);
 }
 
 .small-btn {
-  padding: 8px 12px;
-
-  border-radius: 9px;
-
-  background: color-mix(in srgb, var(--text) 8%, transparent);
-
+  padding: 8px 13px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--text) 7%, transparent);
   border: 1px solid var(--border);
-
   color: var(--muted);
-
   font-size: 11px;
+  backdrop-filter: blur(6px);
 }
 
 .small-btn:hover {
   color: var(--text);
   background: color-mix(in srgb, var(--text) 12%, transparent);
+  border-color: var(--border-glow);
 }
 
-/* ---------- People ---------- */
+/* =========================================================
+   EXPORT MENU
+   ========================================================= */
+.export-menu { position: relative; }
 
+.export-menu-list {
+  position: absolute;
+  top: calc(100% + 6px); right: 0;
+  z-index: 40;
+  display: flex; flex-direction: column; gap: 2px;
+  min-width: 160px;
+  padding: 6px;
+  border-radius: 13px;
+  background: var(--card-strong);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(20px);
+  opacity: 0;
+  transform: translateY(-6px) scale(.96);
+  pointer-events: none;
+  transition: opacity .2s ease, transform .2s ease;
+}
+
+.export-menu-list.open {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+.export-menu-list button {
+  padding: 9px 11px;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--text);
+  font-size: 12px;
+  text-align: left;
+}
+
+.export-menu-list button:hover {
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
+  color: var(--primary);
+}
+
+/* =========================================================
+   PEOPLE CHIPS
+   ========================================================= */
 .people-input {
   display: flex;
   gap: 8px;
@@ -632,15 +702,12 @@ button:active {
 }
 
 .people-input button {
-  padding: 0 17px;
-
-  border-radius: 11px;
-
-  background: color-mix(in srgb, var(--text) 10%, transparent);
-
+  padding: 0 18px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--text) 9%, transparent);
   color: var(--text);
-
   border: 1px solid var(--border);
+  white-space: nowrap;
 }
 
 .chips {
@@ -653,31 +720,27 @@ button:active {
   display: flex;
   align-items: center;
   gap: 8px;
-
-  padding: 7px 9px 7px 12px;
-
+  padding: 7px 9px 7px 13px;
   border-radius: 999px;
-
-  background: color-mix(in srgb, var(--primary) 11%, transparent);
-  border: 1px solid color-mix(in srgb, var(--primary) 24%, transparent);
-
+  background: color-mix(in srgb, var(--primary) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--primary) 22%, transparent);
   font-size: 12px;
+  transition: transform .2s, box-shadow .2s;
+}
+
+.chip:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px color-mix(in srgb, var(--primary) 15%, transparent);
 }
 
 .chip-remove {
-  width: 18px;
-  height: 18px;
-
-  display: grid;
-  place-items: center;
-
+  width: 18px; height: 18px;
+  display: grid; place-items: center;
   border-radius: 50%;
-
   background: color-mix(in srgb, var(--text) 10%, transparent);
-
   color: var(--muted);
-
   font-size: 12px;
+  transition: background .2s, color .2s;
 }
 
 .chip-remove:hover {
@@ -685,18 +748,41 @@ button:active {
   color: var(--red);
 }
 
+.chip-upi {
+  width: 18px; height: 18px;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--text) 10%, transparent);
+  color: var(--muted);
+  font-size: 10px;
+  transition: background .2s, color .2s;
+}
+
+.chip-upi:hover {
+  background: color-mix(in srgb, var(--primary) 22%, transparent);
+  color: var(--primary);
+}
+
+/* =========================================================
+   EMPTY STATES
+   ========================================================= */
 .empty {
   color: var(--muted);
-
   text-align: center;
-
-  padding: 20px 5px;
-
+  padding: 28px 10px;
   font-size: 12px;
 }
 
-/* ---------- Expense form ---------- */
+.empty-icon {
+  font-size: 32px;
+  margin-bottom: 8px;
+  opacity: .5;
+  display: block;
+}
 
+/* =========================================================
+   EXPENSE FORM
+   ========================================================= */
 .amount-row {
   display: grid;
   grid-template-columns: 1fr 120px;
@@ -706,41 +792,54 @@ button:active {
 .split-toggle {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 6px;
-
+  gap: 0;
   margin-bottom: 12px;
-
   padding: 4px;
-
   background: color-mix(in srgb, var(--text) 5%, transparent);
-
   border: 1px solid var(--border);
+  border-radius: 12px;
+  position: relative;
+}
 
-  border-radius: 11px;
+/* sliding pill indicator */
+.split-toggle::before {
+  content: "";
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: calc(50% - 4px);
+  height: calc(100% - 8px);
+  border-radius: 9px;
+  background: var(--primary);
+  transition: transform .3s cubic-bezier(.34,1.56,.64,1);
+  z-index: 0;
+  box-shadow: 0 4px 15px color-mix(in srgb, var(--primary) 30%, transparent);
+}
+
+.split-toggle.custom-active::before {
+  transform: translateX(100%);
 }
 
 .split-mode {
-  padding: 8px;
-
+  padding: 9px;
   background: transparent;
-
   color: var(--muted);
-
-  border-radius: 8px;
-
+  border-radius: 9px;
   font-size: 11px;
+  position: relative;
+  z-index: 1;
+  transition: color .3s ease;
 }
 
 .split-mode.active {
-  background: var(--primary);
   color: var(--on-primary);
+  background: transparent;
 }
 
 .split-list {
   display: flex;
   flex-direction: column;
   gap: 8px;
-
   margin-bottom: 12px;
 }
 
@@ -748,16 +847,16 @@ button:active {
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   padding: 9px 11px;
-
   border: 1px solid var(--border);
-
   border-radius: 10px;
-
   background: color-mix(in srgb, var(--text) 4%, transparent);
-
   font-size: 12px;
+  transition: border-color .2s, background .2s;
+}
+
+.person-check:hover {
+  border-color: var(--border-glow);
 }
 
 .person-check-left {
@@ -766,7 +865,7 @@ button:active {
   gap: 8px;
 }
 
-.person-check input {
+.person-check input[type="checkbox"] {
   width: auto;
   accent-color: var(--primary);
 }
@@ -776,59 +875,60 @@ button:active {
   padding: 7px 8px;
 }
 
-.share-input:disabled {
-  opacity: .3;
-}
+.share-input:disabled { opacity: .3; }
 
 .remaining {
   margin: 5px 0 12px;
-
   font-family: "Space Mono", monospace;
-
   text-align: right;
-
   font-size: 10px;
 }
 
-/* ---------- Expenses ---------- */
+.field-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
 
+/* =========================================================
+   EXPENSE LIST
+   ========================================================= */
 .expense-list {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(12px) scale(.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.expense-enter { animation: slideIn .4s cubic-bezier(.16,1,.3,1); }
+
 .expense {
   display: grid;
   grid-template-columns: 1fr auto;
-
   gap: 10px;
-
-  padding: 14px;
-
+  padding: 15px;
   border: 1px solid var(--border);
-
-  background: color-mix(in srgb, var(--text) 4%, transparent);
-
-  border-radius: 13px;
-
-  transition: .2s;
+  background: color-mix(in srgb, var(--text) 3%, transparent);
+  border-radius: 14px;
+  transition: background .2s, border-color .25s, transform .2s, box-shadow .25s;
 }
 
 .expense:hover {
-  background: color-mix(in srgb, var(--text) 7%, transparent);
-  border-color: color-mix(in srgb, var(--primary) 24%, transparent);
-  transform: translateY(-1px);
+  background: color-mix(in srgb, var(--text) 6%, transparent);
+  border-color: color-mix(in srgb, var(--primary) 22%, transparent);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0,0,0,.15);
 }
 
-.expense-main {
-  min-width: 0;
-}
+.expense-main { min-width: 0; }
 
 .expense-name {
   font-size: 13px;
   font-weight: 600;
-
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -836,45 +936,83 @@ button:active {
 
 .expense-meta {
   margin-top: 4px;
-
   color: var(--muted);
-
   font-size: 10px;
 }
 
 .expense-amount {
   text-align: right;
-
   font-family: "Space Mono", monospace;
-
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
 }
 
-.delete-btn {
+.expense-actions {
+  display: flex;
+  gap: 12px;
   margin-top: 6px;
+}
 
+.edit-btn {
   background: transparent;
-
-  color: #596170;
-
+  color: var(--muted);
   font-size: 10px;
 }
 
-.delete-btn:hover {
-  color: var(--red);
+.edit-btn:hover { color: var(--primary); }
+
+.delete-btn {
+  background: transparent;
+  color: #596170;
+  font-size: 10px;
+}
+
+.delete-btn:hover { color: var(--red); }
+
+/* category tags with unique colors */
+.expense-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  margin-right: 4px;
+}
+
+.expense-tag[data-cat="Food"] {
+  background: color-mix(in srgb, var(--cat-food) 16%, transparent);
+  color: var(--cat-food);
+}
+.expense-tag[data-cat="Travel"] {
+  background: color-mix(in srgb, var(--cat-travel) 16%, transparent);
+  color: var(--cat-travel);
+}
+.expense-tag[data-cat="Hotel"] {
+  background: color-mix(in srgb, var(--cat-hotel) 16%, transparent);
+  color: var(--cat-hotel);
+}
+.expense-tag[data-cat="Shopping"] {
+  background: color-mix(in srgb, var(--cat-shopping) 16%, transparent);
+  color: var(--cat-shopping);
+}
+.expense-tag[data-cat="Fuel"] {
+  background: color-mix(in srgb, var(--cat-fuel) 16%, transparent);
+  color: var(--cat-fuel);
+}
+.expense-tag[data-cat="Other"] {
+  background: color-mix(in srgb, var(--cat-other) 16%, transparent);
+  color: var(--cat-other);
 }
 
 .total {
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   margin-top: 13px;
   padding-top: 15px;
-
   border-top: 1px solid var(--border);
-
   font-family: "Space Mono", monospace;
 }
 
@@ -883,12 +1021,11 @@ button:active {
   font-size: 11px;
 }
 
-.total span:last-child {
-  font-size: 18px;
-}
+.total span:last-child { font-size: 18px; }
 
-/* ---------- Settlement ---------- */
-
+/* =========================================================
+   SETTLEMENT
+   ========================================================= */
 .settlement-list {
   display: flex;
   flex-direction: column;
@@ -896,30 +1033,49 @@ button:active {
 }
 
 .settle {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px;
+  border-radius: 13px;
+  border: 1px solid rgba(56,217,150,.15);
+  background: rgba(56,217,150,.04);
+  font-size: 12px;
+  transition: transform .2s, box-shadow .2s;
+}
+
+.settle:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(56,217,150,.08);
+}
+
+.settle-top {
   display: grid;
   grid-template-columns: 1fr auto 1fr auto;
-
   align-items: center;
   gap: 10px;
-
-  padding: 13px;
-
-  border-radius: 12px;
-
-  border: 1px solid rgba(56,217,150,.13);
-
-  background: rgba(56,217,150,.035);
-
-  font-size: 12px;
 }
 
-.settle-person {
+.upi-pay-btn {
+  align-self: flex-start;
+  padding: 7px 13px;
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--primary) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--primary) 28%, transparent);
+  color: var(--primary);
+  font-size: 11px;
   font-weight: 600;
+  text-decoration: none;
+  transition: background .2s, transform .15s;
 }
 
-.arrow {
-  color: var(--green);
+.upi-pay-btn:hover {
+  background: color-mix(in srgb, var(--primary) 22%, transparent);
+  transform: translateY(-1px);
 }
+
+.settle-person { font-weight: 600; }
+.arrow { color: var(--green); }
 
 .settle-amount {
   font-family: "Space Mono", monospace;
@@ -929,27 +1085,24 @@ button:active {
 
 .all-settled {
   text-align: center;
-
-  padding: 25px;
-
-  border: 1px dashed rgba(56,217,150,.25);
-
-  border-radius: 13px;
-
+  padding: 30px;
+  border: 1px dashed rgba(56,217,150,.3);
+  border-radius: 14px;
   color: var(--green);
-
   font-family: "Space Mono", monospace;
-
   font-size: 12px;
+  animation: pulseGlow 3s ease-in-out infinite;
+  background: rgba(56,217,150,.03);
 }
 
 .all-settled-icon {
-  font-size: 25px;
-  margin-bottom: 8px;
+  font-size: 30px;
+  margin-bottom: 10px;
 }
 
-/* ---------- Balance ---------- */
-
+/* =========================================================
+   BALANCE LIST
+   ========================================================= */
 .balance-list {
   display: flex;
   flex-direction: column;
@@ -960,70 +1113,139 @@ button:active {
   display: flex;
   align-items: center;
   justify-content: space-between;
-
-  padding: 9px 11px;
-
-  border-radius: 9px;
-
+  padding: 10px 12px;
+  border-radius: 10px;
   background: color-mix(in srgb, var(--text) 4%, transparent);
-
   font-size: 12px;
+  transition: transform .2s, background .2s;
 }
 
-.balance-positive {
-  color: var(--green);
+.balance-row:hover {
+  transform: translateX(3px);
+  background: color-mix(in srgb, var(--text) 6%, transparent);
 }
 
-.balance-negative {
-  color: var(--red);
+.balance-positive { color: var(--green); }
+.balance-negative { color: var(--red); }
+.balance-zero { color: var(--muted); }
+
+/* =========================================================
+   CATEGORY BREAKDOWN (unique bar colors)
+   ========================================================= */
+.cat-row { margin-bottom: 13px; }
+.cat-row:last-child { margin-bottom: 0; }
+
+.cat-row-top {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  margin-bottom: 5px;
 }
 
-.balance-zero {
-  color: var(--muted);
+.cat-bar-track {
+  height: 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text) 7%, transparent);
+  overflow: hidden;
 }
 
-/* ---------- Footer ---------- */
+.cat-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width .6s cubic-bezier(.16,1,.3,1);
+}
 
-footer {
-  margin-top: 20px;
+.cat-bar-fill[data-cat="Food"]     { background: linear-gradient(90deg, var(--cat-food), #ffb3d9); }
+.cat-bar-fill[data-cat="Travel"]   { background: linear-gradient(90deg, var(--cat-travel), #5be7f0); }
+.cat-bar-fill[data-cat="Hotel"]    { background: linear-gradient(90deg, var(--cat-hotel), #ffe08a); }
+.cat-bar-fill[data-cat="Shopping"] { background: linear-gradient(90deg, var(--cat-shopping), var(--primary-3)); }
+.cat-bar-fill[data-cat="Fuel"]     { background: linear-gradient(90deg, var(--cat-fuel), #ffcf8a); }
+.cat-bar-fill[data-cat="Other"]    { background: linear-gradient(90deg, var(--primary), var(--primary-2)); }
 
+/* =========================================================
+   GROUP BAR
+   ========================================================= */
+.group-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.group-bar select {
+  flex: 1;
+  min-width: 140px;
+  width: auto;
+}
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+.site-footer {
+  margin-top: 40px;
+  padding-top: 25px;
+  border-top: 1px solid var(--border);
   text-align: center;
-
-  color: var(--muted);
-
-  font-size: 10px;
   position: relative;
   z-index: 1;
 }
 
-/* ---------- Toast ---------- */
+.footer-tagline {
+  color: var(--muted);
+  font-size: 10px;
+  margin-bottom: 16px;
+  letter-spacing: .03em;
+}
 
+.footer-links {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 14px;
+}
+
+.footer-links a {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  padding-bottom: 3px;
+  border-bottom: 1px solid transparent;
+  transition: color .2s, border-color .2s;
+}
+
+.footer-links a:hover {
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+.footer-copyright {
+  color: var(--muted);
+  font-size: 10px;
+  opacity: .7;
+}
+
+/* =========================================================
+   TOAST
+   ========================================================= */
 .toast {
   position: fixed;
-
   left: 50%;
   bottom: 25px;
-
   transform: translate(-50%, 100px);
-
-  padding: 11px 16px;
-
+  padding: 12px 20px;
   border-radius: 999px;
-
   background: var(--card-strong);
-
   border: 1px solid var(--border);
   color: var(--text);
-
-  box-shadow: 0 15px 40px rgba(0,0,0,.4);
-
+  box-shadow: 0 15px 45px rgba(0,0,0,.45);
   font-size: 12px;
-
   opacity: 0;
-
-  transition: .3s;
-
+  transition: .35s cubic-bezier(.16,1,.3,1);
   z-index: 100;
+  backdrop-filter: blur(16px);
 }
 
 .toast.show {
@@ -1031,290 +1253,159 @@ footer {
   transform: translate(-50%, 0);
 }
 
-/* ---------- Theme switcher ---------- */
-
-.theme-switcher {
+/* =========================================================
+   MODE TOGGLE
+   ========================================================= */
+.mode-toggle {
   position: fixed;
-  top: 50%;
-  right: 18px;
-  transform: translateY(-50%);
+  top: 18px; right: 18px;
   z-index: 60;
-
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 10px;
-}
-
-.theme-toggle {
-  width: 48px;
-  height: 48px;
-
-  display: grid;
-  place-items: center;
-
+  width: 48px; height: 48px;
+  display: grid; place-items: center;
   border-radius: 50%;
-
   background: var(--card-strong);
   border: 1px solid var(--border);
   box-shadow: var(--shadow);
-
-  font-size: 20px;
+  font-size: 19px;
   color: var(--text);
+  backdrop-filter: blur(16px);
+  transition: transform .2s, box-shadow .2s, border-color .2s;
 }
 
-.theme-toggle:hover {
-  transform: scale(1.06);
+.mode-toggle:hover {
+  transform: scale(1.08);
+  border-color: var(--border-glow);
+  box-shadow: var(--shadow), 0 0 25px rgba(124,92,255,.12);
 }
 
-.theme-options {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-
-  max-height: 0;
-  overflow: hidden;
-  opacity: 0;
-  transform: translateX(8px);
-
-  padding: 0 8px;
-
-  border-radius: 16px;
-
-  background: var(--card-strong);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow);
-
-  transition:
-    max-height .3s ease,
-    opacity .25s ease,
-    transform .25s ease,
-    padding .3s ease;
-}
-
-.theme-options.open {
-  max-height: 65vh;
-  overflow-y: auto;
-  opacity: 1;
-  transform: translateX(0);
-  padding: 8px;
-}
-
-.theme-btn {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-
-  padding: 8px 12px 8px 8px;
-
-  border-radius: 11px;
-
-  background: transparent;
-  border: 1px solid transparent;
-
-  color: var(--text);
-  font-size: 12px;
-  font-weight: 500;
-  white-space: nowrap;
-}
-
-.theme-btn:hover {
-  background: color-mix(in srgb, var(--text) 6%, transparent);
-}
-
-.theme-btn[aria-pressed="true"] {
-  border-color: var(--swatch, var(--primary));
-  background: color-mix(in srgb, var(--swatch, var(--primary)) 16%, transparent);
-}
-
-.theme-swatch {
-  width: 20px;
-  height: 20px;
-  flex-shrink: 0;
-
-  display: grid;
-  place-items: center;
-
+/* =========================================================
+   FAB (mobile)
+   ========================================================= */
+.fab {
+  display: none;
+  position: fixed;
+  bottom: 24px; right: 20px;
+  z-index: 50;
+  width: 56px; height: 56px;
   border-radius: 50%;
-
-  background: var(--swatch, var(--primary));
-
-  font-size: 11px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-2));
+  color: var(--on-primary);
+  font-size: 26px;
+  box-shadow: 0 8px 30px color-mix(in srgb, var(--primary) 35%, transparent);
+  place-items: center;
+  border: none;
+  transition: transform .2s, box-shadow .2s;
 }
 
-/* ---------- Responsive ---------- */
+.fab:hover, .fab:focus {
+  transform: scale(1.08);
+  box-shadow: 0 12px 40px color-mix(in srgb, var(--primary) 50%, transparent);
+}
 
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
 @media (max-width: 850px) {
-
-  .main-grid {
-    grid-template-columns: 1fr;
-  }
-
+  .main-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 600px) {
+  .app { width: min(100% - 20px, 600px); padding-top: 18px; }
+  .dashboard { grid-template-columns: 1fr; }
+  .topbar { align-items: flex-start; }
+  .status { display: none; }
+  .card { padding: 17px; border-radius: 16px; }
+  .amount-row { grid-template-columns: 1fr; }
+  .settle-top { grid-template-columns: 1fr auto; }
+  .settle-top .arrow { display: none; }
+  .settle-amount { text-align: right; }
+  .mode-toggle { right: 10px; width: 42px; height: 42px; font-size: 17px; }
+  .fab { display: grid; }
+}
 
-  .app {
-    width: min(100% - 20px, 600px);
-    padding-top: 18px;
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
-
-  .dashboard {
-    grid-template-columns: 1fr;
-  }
-
-  .topbar {
-    align-items: flex-start;
-  }
-
-  .status {
-    display: none;
-  }
-
-  .card {
-    padding: 17px;
-    border-radius: 16px;
-  }
-
-  .amount-row {
-    grid-template-columns: 1fr;
-  }
-
-  .settle {
-    grid-template-columns: 1fr auto;
-  }
-
-  .settle .arrow {
-    display: none;
-  }
-
-  .settle-amount {
-    text-align: right;
-  }
-
-  .theme-switcher {
-    right: 10px;
-  }
-
-  .theme-toggle {
-    width: 42px;
-    height: 42px;
-    font-size: 17px;
-  }
-
+  .reveal { opacity: 1; transform: none; }
+  #particleCanvas { display: none; }
 }
 </style>
 </head>
 
 <body>
 
-<div class="currency-watermark" aria-hidden="true">₹</div>
+<!-- Particle mesh background -->
+<canvas id="particleCanvas" aria-hidden="true"></canvas>
 
-<div class="theme-scene" id="themeScene" aria-hidden="true">
-  <div class="theme-icon icon-a" id="themeIconA"></div>
-  <div class="theme-icon icon-b" id="themeIconB"></div>
-  <div class="theme-icon icon-c" id="themeIconC"></div>
+<!-- Confetti canvas (for celebrations) -->
+<canvas id="confettiCanvas" aria-hidden="true"></canvas>
+
+<!-- Noise grain overlay -->
+<div class="noise-overlay" aria-hidden="true"></div>
+
+<!-- Aurora blobs -->
+<div class="aurora" aria-hidden="true">
+  <span class="b1"></span>
+  <span class="b2"></span>
+  <span class="b3"></span>
+  <span class="b4"></span>
 </div>
 
-<nav class="theme-switcher" aria-label="Theme switcher">
+<!-- Theme toggle -->
+<button type="button" class="mode-toggle" id="modeToggleBtn" aria-label="Toggle light or dark theme" aria-pressed="false">🌙</button>
 
-  <button type="button" class="theme-toggle" id="themeToggleBtn" aria-expanded="false" aria-label="Choose a theme">
-    🎨
-  </button>
-
-  <div class="theme-options" id="themeOptions" role="menu">
-
-    <button type="button" class="theme-btn" data-theme="night" style="--swatch:#7c5cff" aria-pressed="true">
-      <span class="theme-swatch">🌙</span><span>Midnight</span>
-    </button>
-
-    <button type="button" class="theme-btn" data-theme="trip" style="--swatch:#ff7a59" aria-pressed="false">
-      <span class="theme-swatch">✈️</span><span>Trip</span>
-    </button>
-
-    <button type="button" class="theme-btn" data-theme="picnic" style="--swatch:#7c9a4c" aria-pressed="false">
-      <span class="theme-swatch">🧺</span><span>Picnic</span>
-    </button>
-
-    <button type="button" class="theme-btn" data-theme="dinner" style="--swatch:#c9a24b" aria-pressed="false">
-      <span class="theme-swatch">🕯️</span><span>Dinner</span>
-    </button>
-
-    <button type="button" class="theme-btn" data-theme="expenses" style="--swatch:#5b7083" aria-pressed="false">
-      <span class="theme-swatch">📋</span><span>Other expenses</span>
-    </button>
-
-    <button type="button" class="theme-btn" data-theme="drinks" style="--swatch:#e0952b" aria-pressed="false">
-      <span class="theme-swatch">🍸</span><span>Drinks</span>
-    </button>
-
-    <button type="button" class="theme-btn" data-theme="pub" style="--swatch:#b8873c" aria-pressed="false">
-      <span class="theme-swatch">🍺</span><span>Pub</span>
-    </button>
-
-    <button type="button" class="theme-btn" data-theme="love" style="--swatch:#d94f6c" aria-pressed="false">
-      <span class="theme-swatch">❤️</span><span>With love</span>
-    </button>
-
-    <button type="button" class="theme-btn" data-theme="friends" style="--swatch:#ff6f91" aria-pressed="false">
-      <span class="theme-swatch">🎉</span><span>Friends</span>
-    </button>
-
-    <button type="button" class="theme-btn" data-theme="money" style="--swatch:#c9a227" aria-pressed="false">
-      <span class="theme-swatch">₹</span><span>Money</span>
-    </button>
-
-  </div>
-
-</nav>
+<!-- FAB (mobile) -->
+<button type="button" class="fab" id="fabBtn" aria-label="Add new expense">+</button>
 
 <div class="app">
 
   <!-- HEADER -->
-  <header class="topbar">
-
+  <header class="topbar reveal">
     <div class="brand">
-
       <div class="logo">T</div>
-
       <div>
-        <h1>TALLY</h1>
-        <p>Smart expense splitting</p>
+        <h1 class="gradient-text">TALLY</h1>
+        <p id="tagline"></p>
       </div>
-
     </div>
-
     <div class="status">
       <span class="status-dot"></span>
       Saved locally
     </div>
-
   </header>
 
+  <!-- GROUPS -->
+  <div class="group-bar reveal reveal-delay-1">
+    <select id="groupSelect" aria-label="Select group"></select>
+    <button class="small-btn" id="newGroupBtn">+ New group</button>
+    <button class="small-btn" id="renameGroupBtn">Rename</button>
+    <button class="small-btn" id="deleteGroupBtn">Delete</button>
+  </div>
 
   <!-- DASHBOARD -->
   <div class="dashboard">
-
-    <div class="stat-card">
-      <div class="stat-label">TOTAL SPENDING</div>
-      <div class="stat-value" id="totalStat">$0.00</div>
+    <div class="stat-card reveal reveal-delay-1">
+      <div class="stat-label">Total Spending</div>
+      <div class="stat-value" id="totalStat">₹0.00</div>
       <div class="stat-small">Across all expenses</div>
     </div>
-
-    <div class="stat-card">
-      <div class="stat-label">PEOPLE</div>
+    <div class="stat-card reveal reveal-delay-2">
+      <div class="stat-label">People</div>
       <div class="stat-value" id="peopleStat">0</div>
       <div class="stat-small">In this group</div>
     </div>
-
-    <div class="stat-card">
-      <div class="stat-label">EXPENSES</div>
+    <div class="stat-card reveal reveal-delay-3">
+      <div class="stat-label">Expenses</div>
       <div class="stat-value" id="expenseStat">0</div>
       <div class="stat-small">Recorded transactions</div>
     </div>
-
   </div>
-
 
   <!-- MAIN -->
   <main class="main-grid">
@@ -1323,1915 +1414,1261 @@ footer {
     <div>
 
       <!-- PEOPLE -->
-      <section class="card">
-
+      <section class="card reveal">
         <div class="card-title">
           <h2>People</h2>
           <span id="peopleCount">0 members</span>
         </div>
-
         <div class="people-input">
-
-          <input
-            type="text"
-            id="personInput"
-            placeholder="Enter person's name"
-            maxlength="24"
-          >
-
-          <button id="addPersonBtn">
-            Add
-          </button>
-
+          <input type="text" id="personInput" placeholder="Enter person's name" maxlength="24">
+          <button id="addPersonBtn" class="ripple-host">Add</button>
         </div>
-
         <div class="chips" id="peopleChips"></div>
-
       </section>
 
-
       <!-- EXPENSE FORM -->
-      <section class="card">
-
+      <section class="card reveal reveal-delay-1" id="expenseFormCard">
         <div class="card-title">
           <h2>New expense</h2>
-          <span>ADD TRANSACTION</span>
+          <span>Add transaction</span>
         </div>
 
         <div class="form-group">
-
-          <label class="field-label">
-            DESCRIPTION
-          </label>
-
-          <input
-            type="text"
-            id="descInput"
-            placeholder="Dinner, hotel, groceries..."
-          >
-
+          <label class="field-label">Description</label>
+          <input type="text" id="descInput" placeholder="Dinner, hotel, groceries...">
         </div>
 
-
         <div class="form-group">
-
-          <label class="field-label">
-            PAID BY
-          </label>
-
+          <label class="field-label">Paid by</label>
           <select id="payerInput">
             <option value="">Select payer...</option>
           </select>
-
         </div>
-
 
         <div class="form-group">
-
-          <label class="field-label">
-            AMOUNT
-          </label>
-
-          <input
-            type="number"
-            id="amountInput"
-            placeholder="0.00"
-            min="0"
-            step="0.01"
-          >
-
+          <label class="field-label">Amount</label>
+          <input type="number" id="amountInput" placeholder="0.00" min="0" step="0.01">
         </div>
 
-
-        <div class="field-label">
-          SPLIT METHOD
+        <div class="form-group field-row-2">
+          <div>
+            <label class="field-label">Category</label>
+            <select id="categoryInput">
+              <option>Food</option>
+              <option>Travel</option>
+              <option>Hotel</option>
+              <option>Shopping</option>
+              <option>Fuel</option>
+              <option selected>Other</option>
+            </select>
+          </div>
+          <div>
+            <label class="field-label">Date</label>
+            <input type="date" id="dateInput">
+          </div>
         </div>
 
-        <div class="split-toggle">
-
-          <button
-            type="button"
-            class="split-mode active"
-            data-mode="even"
-          >
-            Even
-          </button>
-
-          <button
-            type="button"
-            class="split-mode"
-            data-mode="custom"
-          >
-            Custom
-          </button>
-
+        <div class="field-label">Split method</div>
+        <div class="split-toggle" id="splitToggle">
+          <button type="button" class="split-mode active" data-mode="even">Even</button>
+          <button type="button" class="split-mode" data-mode="custom">Custom</button>
         </div>
 
+        <div class="field-label">Split between</div>
+        <div class="split-list" id="splitWith"></div>
+        <div class="remaining" id="splitRemaining" style="display:none;"></div>
 
-        <div class="field-label">
-          SPLIT BETWEEN
-        </div>
-
-        <div
-          class="split-list"
-          id="splitWith"
-        ></div>
-
-
-        <div
-          class="remaining"
-          id="splitRemaining"
-          style="display:none;"
-        ></div>
-
-
-        <button
-          class="primary-btn"
-          id="addExpenseBtn"
-        >
-          + Add expense
-        </button>
-
+        <button class="primary-btn ripple-host" id="addExpenseBtn">+ Add expense</button>
+        <button class="small-btn" id="cancelEditBtn" style="display:none; margin-top:8px; width:100%;">Cancel edit</button>
       </section>
 
-
       <!-- BALANCES -->
-      <section class="card">
-
+      <section class="card reveal reveal-delay-2">
         <div class="card-title">
           <h2>Balances</h2>
-          <span>WHO OWES WHAT</span>
+          <span>Who owes what</span>
         </div>
+        <div class="balance-list" id="balanceList"></div>
+      </section>
 
-        <div
-          class="balance-list"
-          id="balanceList"
-        ></div>
-
+      <!-- CATEGORY BREAKDOWN -->
+      <section class="card reveal reveal-delay-3">
+        <div class="card-title">
+          <h2>Spending by category</h2>
+          <span>Breakdown</span>
+        </div>
+        <div id="categoryChart"></div>
       </section>
 
     </div>
-
 
     <!-- RIGHT COLUMN -->
     <div>
 
       <!-- LEDGER -->
-      <section class="card">
-
+      <section class="card reveal">
         <div class="card-title">
-
           <h2>Expense ledger</h2>
-
-          <button
-            class="small-btn"
-            id="clearBtn"
-          >
-            Clear all
-          </button>
-
+          <div style="display:flex; gap:8px;">
+            <div class="export-menu">
+              <button class="small-btn" id="exportBtn" aria-expanded="false">Export ▾</button>
+              <div class="export-menu-list" id="exportMenuList">
+                <button type="button" id="exportCsvBtn">📄 CSV</button>
+                <button type="button" id="exportXlsxBtn">📊 Excel (.xlsx)</button>
+              </div>
+            </div>
+            <button class="small-btn" id="clearBtn">Clear all</button>
+          </div>
         </div>
-
-        <div
-          class="expense-list"
-          id="expenseList"
-        ></div>
-
+        <div class="form-group">
+          <input type="text" id="searchInput" placeholder="Search expenses...">
+        </div>
+        <div class="expense-list" id="expenseList"></div>
         <div class="total">
-
           <span>TOTAL</span>
-
-          <span id="totalAmt">
-            $0.00
-          </span>
-
+          <span id="totalAmt">₹0.00</span>
         </div>
-
       </section>
 
-
       <!-- SETTLEMENT -->
-      <section class="card">
-
+      <section class="card reveal reveal-delay-1">
         <div class="card-title">
-
           <h2>Settle up</h2>
-
-          <span>MINIMUM TRANSFERS</span>
-
+          <span>Minimum transfers</span>
         </div>
-
-        <div
-          class="settlement-list"
-          id="settlementList"
-        ></div>
-
+        <div class="settlement-list" id="settlementList"></div>
       </section>
 
     </div>
-
   </main>
 
-
-  <footer>
-    TALLY · Your expenses stay on this device
+  <footer class="site-footer reveal">
+    <div class="footer-tagline">TALLY · Your expenses stay on this device</div>
+    <div class="footer-links">
+      <a href="https://github.com/pranavjadhav1819" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://www.linkedin.com/in/pranav-jadhav-31006b373/" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="mailto:jadhav.pranav.1819@gmail.com">Email</a>
+      <a href="https://pranav18.onrender.com" target="_blank" rel="noopener">Website</a>
+    </div>
+    <div class="footer-copyright">© 2026 Pranav Jadhav. All rights reserved.</div>
   </footer>
 
 </div>
 
-
-<div
-  class="toast"
-  id="toast"
-></div>
-
+<div class="toast" id="toast"></div>
 
 <script>
-
 /* =========================================================
-   TALLY — MODERN EXPENSE SPLITTER
+   TALLY — MODERN EXPENSE SPLITTER (Enhanced)
    ========================================================= */
 
 let people = [];
 let expenses = [];
-
+let groups = [];
+let currentGroupId = null;
 let splitMode = "even";
+let editingExpenseId = null;
+let editPrefillShares = null;
+let lastAddedExpenseId = null;
 
-const STORAGE_KEY = "tally-modern-data";
+const GROUPS_KEY = "tally-groups-v2";
+const LEGACY_KEY = "tally-modern-data";
+const CATEGORIES = ["Food", "Travel", "Hotel", "Shopping", "Fuel", "Other"];
+
+const CAT_COLORS = {
+  Food: "var(--cat-food)", Travel: "var(--cat-travel)",
+  Hotel: "var(--cat-hotel)", Shopping: "var(--cat-shopping)",
+  Fuel: "var(--cat-fuel)", Other: "var(--cat-other)"
+};
+
+/* =========================================================
+   PARTICLE MESH BACKGROUND
+   ========================================================= */
+(function initParticles() {
+  const canvas = document.getElementById("particleCanvas");
+  const ctx = canvas.getContext("2d");
+  let particles = [];
+  const PARTICLE_COUNT = 70;
+  const CONNECT_DIST = 130;
+  let w, h;
+  let animId;
+  const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  if (prefersReduced) return;
+
+  function resize() {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+  }
+
+  function createParticles() {
+    particles = [];
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      particles.push({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: (Math.random() - 0.5) * 0.4,
+        r: 1.5 + Math.random() * 1.5
+      });
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, w, h);
+
+    const isDark = document.documentElement.getAttribute("data-mode") !== "light";
+    const dotColor = isDark ? "rgba(124,92,255," : "rgba(100,80,200,";
+    const lineColor = isDark ? "rgba(124,92,255," : "rgba(100,80,200,";
+
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < 0 || p.x > w) p.vx *= -1;
+      if (p.y < 0 || p.y > h) p.vy *= -1;
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = dotColor + "0.4)";
+      ctx.fill();
+
+      for (let j = i + 1; j < particles.length; j++) {
+        const q = particles[j];
+        const dx = p.x - q.x;
+        const dy = p.y - q.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < CONNECT_DIST) {
+          const alpha = (1 - dist / CONNECT_DIST) * 0.15;
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(q.x, q.y);
+          ctx.strokeStyle = lineColor + alpha + ")";
+          ctx.lineWidth = 0.6;
+          ctx.stroke();
+        }
+      }
+    }
+
+    animId = requestAnimationFrame(draw);
+  }
+
+  resize();
+  createParticles();
+  draw();
+
+  window.addEventListener("resize", () => {
+    resize();
+    createParticles();
+  });
+})();
+
+
+/* =========================================================
+   TYPING ANIMATION
+   ========================================================= */
+(function initTyping() {
+  const el = document.getElementById("tagline");
+  const text = "Smart expense splitting";
+  let i = 0;
+
+  const cursor = document.createElement("span");
+  cursor.className = "typing-cursor";
+  el.appendChild(cursor);
+
+  function typeChar() {
+    if (i < text.length) {
+      el.insertBefore(document.createTextNode(text[i]), cursor);
+      i++;
+      setTimeout(typeChar, 55 + Math.random() * 35);
+    } else {
+      setTimeout(() => cursor.remove(), 2000);
+    }
+  }
+
+  setTimeout(typeChar, 600);
+})();
+
+
+/* =========================================================
+   INTERSECTION OBSERVER (scroll reveals)
+   ========================================================= */
+(function initReveals() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("visible");
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.08, rootMargin: "0px 0px -40px 0px" });
+
+  document.querySelectorAll(".reveal").forEach(el => observer.observe(el));
+
+  // re-observe after renders
+  window._observeReveals = () => {
+    document.querySelectorAll(".reveal:not(.visible)").forEach(el => observer.observe(el));
+  };
+})();
+
+
+/* =========================================================
+   3D TILT EFFECT ON STAT CARDS
+   ========================================================= */
+(function initTilt() {
+  const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (prefersReduced) return;
+
+  document.querySelectorAll(".stat-card").forEach(card => {
+    card.addEventListener("mousemove", (e) => {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      const rotateX = ((y - centerY) / centerY) * -6;
+      const rotateY = ((x - centerX) / centerX) * 6;
+      card.style.transform = `perspective(600px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+    });
+
+    card.addEventListener("mouseleave", () => {
+      card.style.transform = "perspective(600px) rotateX(0) rotateY(0) scale(1)";
+    });
+  });
+})();
+
+
+/* =========================================================
+   RIPPLE EFFECT
+   ========================================================= */
+document.addEventListener("click", (e) => {
+  const host = e.target.closest(".ripple-host");
+  if (!host) return;
+
+  const rect = host.getBoundingClientRect();
+  const size = Math.max(rect.width, rect.height) * 2;
+  const circle = document.createElement("span");
+  circle.className = "ripple-circle";
+  circle.style.width = circle.style.height = size + "px";
+  circle.style.left = (e.clientX - rect.left - size / 2) + "px";
+  circle.style.top = (e.clientY - rect.top - size / 2) + "px";
+  host.appendChild(circle);
+  setTimeout(() => circle.remove(), 600);
+});
+
+
+/* =========================================================
+   COUNTER ANIMATION
+   ========================================================= */
+function animateCounter(el, target, prefix, isFloat) {
+  const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (prefersReduced) {
+    el.textContent = prefix + (isFloat ? target.toFixed(2) : target);
+    return;
+  }
+
+  const current = parseFloat(el.dataset.currentVal || "0");
+  el.dataset.currentVal = target;
+  const start = performance.now();
+  const duration = 500;
+
+  function step(now) {
+    const elapsed = Math.min((now - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - elapsed, 3); // ease-out cubic
+    const val = current + (target - current) * ease;
+    el.textContent = prefix + (isFloat ? val.toFixed(2) : Math.round(val));
+    if (elapsed < 1) requestAnimationFrame(step);
+  }
+
+  requestAnimationFrame(step);
+}
+
+
+/* =========================================================
+   CANVAS CONFETTI
+   ========================================================= */
+function fireConfetti() {
+  const canvas = document.getElementById("confettiCanvas");
+  const ctx = canvas.getContext("2d");
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const pieces = [];
+  const COLORS = ["#7c5cff", "#9b85ff", "#36d1dc", "#38d996", "#ffc857", "#ff7eb3", "#ff9f43"];
+  const COUNT = 150;
+
+  for (let i = 0; i < COUNT; i++) {
+    pieces.push({
+      x: canvas.width / 2 + (Math.random() - 0.5) * 200,
+      y: canvas.height * 0.6,
+      vx: (Math.random() - 0.5) * 14,
+      vy: -(3 + Math.random() * 10),
+      w: 6 + Math.random() * 6,
+      h: 4 + Math.random() * 4,
+      color: COLORS[Math.floor(Math.random() * COLORS.length)],
+      rotation: Math.random() * Math.PI * 2,
+      rotationSpeed: (Math.random() - 0.5) * 0.2,
+      gravity: 0.18 + Math.random() * 0.06,
+      opacity: 1,
+      decay: 0.012 + Math.random() * 0.008
+    });
+  }
+
+  let animId;
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    let alive = false;
+
+    pieces.forEach(p => {
+      if (p.opacity <= 0) return;
+      alive = true;
+
+      p.x += p.vx;
+      p.vy += p.gravity;
+      p.y += p.vy;
+      p.vx *= 0.99;
+      p.rotation += p.rotationSpeed;
+      p.opacity -= p.decay;
+
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rotation);
+      ctx.globalAlpha = Math.max(0, p.opacity);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      ctx.restore();
+    });
+
+    if (alive) {
+      animId = requestAnimationFrame(draw);
+    } else {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+  }
+
+  draw();
+}
 
 
 /* =========================================================
    STORAGE
    ========================================================= */
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+}
+
+function todayStr() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+function formatDate(iso) {
+  if (!iso) return "";
+  const d = new Date(iso + "T00:00:00");
+  if (isNaN(d)) return iso;
+  return d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+}
 
 function saveData() {
+  const group = groups.find(g => g.id === currentGroupId);
+  if (group) { group.people = people; group.expenses = expenses; }
+  localStorage.setItem(GROUPS_KEY, JSON.stringify({ groups, currentGroupId }));
+}
 
-  localStorage.setItem(
-    STORAGE_KEY,
-    JSON.stringify({
-      people,
-      expenses
-    })
-  );
+function loadGroupIntoState() {
+  const group = groups.find(g => g.id === currentGroupId) || groups[0];
+  people = group.people || [];
+  expenses = group.expenses || [];
+}
 
+function loadData() {
+  try {
+    const raw = localStorage.getItem(GROUPS_KEY);
+    if (raw) {
+      const data = JSON.parse(raw);
+      groups = data.groups || [];
+      currentGroupId = data.currentGroupId;
+    } else {
+      let migratedPeople = [], migratedExpenses = [];
+      try {
+        const legacy = localStorage.getItem(LEGACY_KEY);
+        if (legacy) {
+          const ld = JSON.parse(legacy);
+          migratedPeople = ld.people || [];
+          migratedExpenses = (ld.expenses || []).map(e => ({ ...e, category: e.category || "Other", date: e.date || todayStr() }));
+        }
+      } catch (err) {}
+      groups = [{ id: uid(), name: "My Group", people: migratedPeople, expenses: migratedExpenses, upi: {} }];
+      currentGroupId = groups[0].id;
+    }
+  } catch (error) {
+    groups = [{ id: uid(), name: "My Group", people: [], expenses: [], upi: {} }];
+    currentGroupId = groups[0].id;
+  }
+
+  if (!groups.length) {
+    groups = [{ id: uid(), name: "My Group", people: [], expenses: [], upi: {} }];
+    currentGroupId = groups[0].id;
+  }
+
+  groups.forEach(g => { if (!g.upi) g.upi = {}; });
+  if (!groups.find(g => g.id === currentGroupId)) currentGroupId = groups[0].id;
+
+  loadGroupIntoState();
+  render();
 }
 
 
-function loadData() {
-
-  try {
-
-    const saved =
-      localStorage.getItem(STORAGE_KEY);
-
-    if (saved) {
-
-      const data = JSON.parse(saved);
-
-      people = data.people || [];
-      expenses = data.expenses || [];
-
-    }
-
-  } catch (error) {
-
-    people = [];
-    expenses = [];
-
-  }
-
+function switchGroup(id) {
+  saveData();
+  currentGroupId = id;
+  loadGroupIntoState();
+  saveData();
   render();
+}
 
+function addGroup() {
+  const name = prompt("New group name:", "");
+  if (!name || !name.trim()) return;
+  saveData();
+  const group = { id: uid(), name: name.trim(), people: [], expenses: [], upi: {} };
+  groups.push(group);
+  currentGroupId = group.id;
+  loadGroupIntoState();
+  saveData();
+  render();
+  showToast(`${group.name} created`);
+}
+
+function renameGroup() {
+  const group = groups.find(g => g.id === currentGroupId);
+  if (!group) return;
+  const name = prompt("Rename group:", group.name);
+  if (!name || !name.trim()) return;
+  group.name = name.trim();
+  saveData();
+  renderGroupSelector();
+  showToast("Group renamed");
+}
+
+function deleteGroup() {
+  if (groups.length <= 1) { showToast("You need at least one group"); return; }
+  const group = groups.find(g => g.id === currentGroupId);
+  if (!confirm(`Delete "${group.name}" and all its data?`)) return;
+  groups = groups.filter(g => g.id !== currentGroupId);
+  currentGroupId = groups[0].id;
+  loadGroupIntoState();
+  saveData();
+  render();
+  showToast("Group deleted");
 }
 
 
 /* =========================================================
    UTILITIES
    ========================================================= */
-
 function fmt(amount) {
-
-  return "$" + Number(amount || 0).toFixed(2);
-
+  return "₹" + Number(amount || 0).toFixed(2);
 }
-
 
 function escapeHtml(value) {
-
   const div = document.createElement("div");
-
   div.textContent = value;
-
   return div.innerHTML;
+}
 
+function showToast(message) {
+  const toast = document.getElementById("toast");
+  toast.textContent = message;
+  toast.classList.add("show");
+  setTimeout(() => toast.classList.remove("show"), 2400);
+}
+
+function shakeElement(el) {
+  el.classList.remove("shake");
+  void el.offsetWidth; // reflow
+  el.classList.add("shake");
 }
 
 
-function showToast(message) {
+/* =========================================================
+   EXPORT
+   ========================================================= */
+function exportCSV() {
+  if (!expenses.length) { showToast("No expenses to export"); return; }
+  const rows = [["Date", "Description", "Category", "Paid by", "Amount", "Split between"]];
+  expenses.forEach(e => {
+    rows.push([e.date || "", e.desc, e.category || "", e.payer, e.amount.toFixed(2), Object.keys(e.shares || {}).join(" | ")]);
+  });
+  const csv = rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(",")).join("\n");
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  const group = groups.find(g => g.id === currentGroupId);
+  link.href = url;
+  link.download = `tally-${(group ? group.name : "expenses").replace(/\s+/g, "-").toLowerCase()}.csv`;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+  showToast("CSV exported");
+}
 
-  const toast =
-    document.getElementById("toast");
+function loadXLSXLibrary() {
+  if (window.XLSX) return Promise.resolve();
+  return new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = "https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js";
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error("Failed to load Excel library"));
+    document.head.appendChild(script);
+  });
+}
 
-  toast.textContent = message;
-
-  toast.classList.add("show");
-
-  setTimeout(() => {
-
-    toast.classList.remove("show");
-
-  }, 2200);
-
+function exportExcel() {
+  if (!expenses.length) { showToast("No expenses to export"); return; }
+  showToast("Preparing Excel file...");
+  loadXLSXLibrary().then(() => {
+    const group = groups.find(g => g.id === currentGroupId);
+    const expenseRows = [["Date", "Description", "Category", "Paid by", "Amount", "Split between"]];
+    expenses.forEach(e => {
+      expenseRows.push([e.date || "", e.desc, e.category || "", e.payer, e.amount, Object.keys(e.shares || {}).join(", ")]);
+    });
+    const balances = computeBalances();
+    const balanceRows = [["Person", "Status", "Amount"]];
+    Object.entries(balances).forEach(([person, balance]) => {
+      balanceRows.push([person, balance > 0.005 ? "Gets back" : balance < -0.005 ? "Owes" : "Settled", Math.abs(balance)]);
+    });
+    const settlementRows = [["From", "To", "Amount"]];
+    simplifySettlements(balances).forEach(t => { settlementRows.push([t.from, t.to, t.amount]); });
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(expenseRows), "Expenses");
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(balanceRows), "Balances");
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(settlementRows), "Settlements");
+    XLSX.writeFile(wb, `tally-${(group ? group.name : "expenses").replace(/\s+/g, "-").toLowerCase()}.xlsx`);
+    showToast("Excel file exported");
+  }).catch(() => {
+    showToast("Couldn't load the Excel exporter — check your connection");
+  });
 }
 
 
 /* =========================================================
    PEOPLE
    ========================================================= */
-
 function addPerson() {
-
-  const input =
-    document.getElementById("personInput");
-
-  const name =
-    input.value.trim();
-
-  if (!name) {
-
-    showToast("Enter a person's name");
-
-    return;
-
+  const input = document.getElementById("personInput");
+  const name = input.value.trim();
+  if (!name) { showToast("Enter a person's name"); shakeElement(input); return; }
+  if (people.some(p => p.toLowerCase() === name.toLowerCase())) {
+    showToast("That person already exists"); input.value = ""; return;
   }
-
-  if (people.includes(name)) {
-
-    showToast("That person already exists");
-
-    input.value = "";
-
-    return;
-
-  }
-
   people.push(name);
-
   input.value = "";
-
   saveData();
-
   render();
-
   showToast(`${name} added`);
-
 }
 
+function setPersonUpi(name) {
+  const group = groups.find(g => g.id === currentGroupId);
+  if (!group) return;
+  if (!group.upi) group.upi = {};
+  const current = group.upi[name] || "";
+  const value = prompt(`UPI ID for ${name} (e.g. name@bank):`, current);
+  if (value === null) return;
+  if (value.trim()) { group.upi[name] = value.trim(); showToast(`UPI saved for ${name}`); }
+  else { delete group.upi[name]; showToast(`UPI removed for ${name}`); }
+  saveData();
+}
 
 function removePerson(name) {
-
-  if (
-    !confirm(
-      `Remove ${name} from the group?`
-    )
-  ) return;
-
-  people =
-    people.filter(
-      person => person !== name
-    );
-
-  expenses =
-    expenses
-      .filter(
-        expense => expense.payer !== name
-      )
-      .map(expense => {
-
-        const shares =
-          { ...expense.shares };
-
-        delete shares[name];
-
-        return {
-          ...expense,
-          shares
-        };
-
-      });
-
-  saveData();
-
-  render();
-
+  if (!confirm(`Remove ${name} from the group?`)) return;
+  people = people.filter(p => p !== name);
+  expenses = expenses.filter(e => e.payer !== name).map(e => {
+    const shares = { ...e.shares }; delete shares[name];
+    return { ...e, shares };
+  });
+  const group = groups.find(g => g.id === currentGroupId);
+  if (group && group.upi) delete group.upi[name];
+  saveData(); render();
   showToast(`${name} removed`);
-
 }
 
 
 /* =========================================================
    EXPENSES
    ========================================================= */
+function startEditExpense(id) {
+  const expense = expenses.find(e => e.id === id);
+  if (!expense) return;
+  editingExpenseId = id;
+  document.getElementById("descInput").value = expense.desc;
+  document.getElementById("payerInput").value = expense.payer;
+  document.getElementById("amountInput").value = expense.amount;
+  document.getElementById("categoryInput").value = expense.category || "Other";
+  document.getElementById("dateInput").value = expense.date || todayStr();
+
+  editPrefillShares = { ...expense.shares };
+  const values = Object.values(expense.shares || {});
+  const evenShare = expense.amount / (values.length || 1);
+  const isEven = values.every(v => Math.abs(v - evenShare) < 0.02);
+  splitMode = isEven ? "even" : "custom";
+
+  document.querySelectorAll(".split-mode").forEach(btn =>
+    btn.classList.toggle("active", btn.dataset.mode === splitMode)
+  );
+  updateSplitToggleIndicator();
+
+  document.getElementById("addExpenseBtn").textContent = "Save changes";
+  document.getElementById("cancelEditBtn").style.display = "block";
+  buildSplitSection();
+  document.getElementById("expenseFormCard").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function cancelEdit() {
+  editingExpenseId = null;
+  editPrefillShares = null;
+  document.getElementById("descInput").value = "";
+  document.getElementById("amountInput").value = "";
+  document.getElementById("categoryInput").value = "Other";
+  document.getElementById("dateInput").value = todayStr();
+  document.getElementById("addExpenseBtn").textContent = "+ Add expense";
+  document.getElementById("cancelEditBtn").style.display = "none";
+  buildSplitSection();
+}
 
 function addExpense() {
+  const desc = document.getElementById("descInput").value.trim() || "Untitled expense";
+  const payer = document.getElementById("payerInput").value;
+  const amount = parseFloat(document.getElementById("amountInput").value);
+  const category = document.getElementById("categoryInput").value || "Other";
+  const date = document.getElementById("dateInput").value || todayStr();
 
-  const desc =
-    document
-      .getElementById("descInput")
-      .value
-      .trim()
-      || "Untitled expense";
+  if (!payer) { showToast("Select who paid"); shakeElement(document.getElementById("payerInput")); return; }
+  if (!amount || amount <= 0) { showToast("Enter a valid amount"); shakeElement(document.getElementById("amountInput")); return; }
 
-  const payer =
-    document
-      .getElementById("payerInput")
-      .value;
-
-  const amount =
-    parseFloat(
-      document
-        .getElementById("amountInput")
-        .value
-    );
-
-  if (!payer) {
-
-    showToast("Select who paid");
-
-    return;
-
-  }
-
-  if (!amount || amount <= 0) {
-
-    showToast("Enter a valid amount");
-
-    return;
-
-  }
-
-  const checks =
-    Array
-      .from(
-        document.querySelectorAll(
-          ".split-check"
-        )
-      )
-      .filter(
-        checkbox => checkbox.checked
-      );
-
-  if (!checks.length) {
-
-    showToast(
-      "Select at least one person"
-    );
-
-    return;
-
-  }
+  const checks = Array.from(document.querySelectorAll(".split-check")).filter(cb => cb.checked);
+  if (!checks.length) { showToast("Select at least one person"); return; }
 
   const shares = {};
-
   if (splitMode === "even") {
-
-    const each =
-      amount / checks.length;
-
-    checks.forEach(
-      checkbox => {
-
-        shares[checkbox.value] =
-          each;
-
-      }
-    );
-
+    const each = amount / checks.length;
+    checks.forEach(cb => { shares[cb.value] = each; });
   } else {
-
     let totalShares = 0;
-
-    document
-      .querySelectorAll(
-        ".person-check"
-      )
-      .forEach(row => {
-
-        const checkbox =
-          row.querySelector(
-            ".split-check"
-          );
-
-        if (!checkbox.checked)
-          return;
-
-        const input =
-          row.querySelector(
-            ".share-input"
-          );
-
-        const value =
-          parseFloat(input.value) || 0;
-
-        shares[checkbox.value] =
-          value;
-
-        totalShares += value;
-
-      });
-
-    if (
-      Math.abs(
-        totalShares - amount
-      ) > 0.01
-    ) {
-
-      showToast(
-        "Custom shares must equal the total"
-      );
-
-      return;
-
-    }
-
+    document.querySelectorAll(".person-check").forEach(row => {
+      const cb = row.querySelector(".split-check");
+      if (!cb.checked) return;
+      const input = row.querySelector(".share-input");
+      const value = parseFloat(input.value) || 0;
+      shares[cb.value] = value;
+      totalShares += value;
+    });
+    if (Math.abs(totalShares - amount) > 0.01) { showToast("Custom shares must equal the total"); return; }
   }
 
+  if (editingExpenseId) {
+    const index = expenses.findIndex(e => e.id === editingExpenseId);
+    if (index !== -1) {
+      expenses[index] = { ...expenses[index], desc, payer, amount, shares, category, date };
+    }
+    editingExpenseId = null;
+    editPrefillShares = null;
+    document.getElementById("addExpenseBtn").textContent = "+ Add expense";
+    document.getElementById("cancelEditBtn").style.display = "none";
+    showToast("Expense updated");
+  } else {
+    const newExpense = { id: uid(), desc, payer, amount, shares, category, date };
+    expenses.push(newExpense);
+    lastAddedExpenseId = newExpense.id;
+    showToast("Expense added");
+  }
 
-  expenses.push({
-
-    id:
-      Date.now(),
-
-    desc,
-
-    payer,
-
-    amount,
-
-    shares
-
-  });
-
-
-  document
-    .getElementById("descInput")
-    .value = "";
-
-  document
-    .getElementById("amountInput")
-    .value = "";
-
-
-  saveData();
-
-  render();
-
-  showToast("Expense added");
-
+  document.getElementById("descInput").value = "";
+  document.getElementById("amountInput").value = "";
+  document.getElementById("categoryInput").value = "Other";
+  document.getElementById("dateInput").value = todayStr();
+  saveData(); render();
 }
-
 
 function removeExpense(id) {
-
-  expenses =
-    expenses.filter(
-      expense => expense.id !== id
-    );
-
-  saveData();
-
-  render();
-
+  expenses = expenses.filter(e => e.id !== id);
+  if (editingExpenseId === id) cancelEdit();
+  saveData(); render();
   showToast("Expense removed");
-
 }
 
 
 /* =========================================================
-   BALANCES
+   BALANCES & SETTLEMENT ALGORITHM
    ========================================================= */
-
 function computeBalances() {
-
   const balances = {};
-
-  people.forEach(
-    person => {
-      balances[person] = 0;
-    }
-  );
-
-
-  expenses.forEach(expense => {
-
-    if (
-      !(expense.payer in balances)
-    ) return;
-
-
-    balances[expense.payer] +=
-      expense.amount;
-
-
-    Object.entries(
-      expense.shares || {}
-    ).forEach(
-      ([person, amount]) => {
-
-        if (person in balances) {
-
-          balances[person] -=
-            amount;
-
-        }
-
-      }
-    );
-
+  people.forEach(p => { balances[p] = 0; });
+  expenses.forEach(e => {
+    if (!(e.payer in balances)) return;
+    balances[e.payer] += e.amount;
+    Object.entries(e.shares || {}).forEach(([person, amount]) => {
+      if (person in balances) balances[person] -= amount;
+    });
   });
-
-
   return balances;
-
 }
 
-
-/* =========================================================
-   SETTLEMENT ALGORITHM
-   ========================================================= */
-
-function simplifySettlements(
-  balances
-) {
-
-  const creditors = [];
-  const debtors = [];
-
-
-  Object.entries(
-    balances
-  ).forEach(
-    ([person, balance]) => {
-
-      if (balance > 0.005) {
-
-        creditors.push({
-          person,
-          amount: balance
-        });
-
-      }
-
-      else if (
-        balance < -0.005
-      ) {
-
-        debtors.push({
-          person,
-          amount: -balance
-        });
-
-      }
-
-    }
-  );
-
-
-  creditors.sort(
-    (a,b) =>
-      b.amount - a.amount
-  );
-
-  debtors.sort(
-    (a,b) =>
-      b.amount - a.amount
-  );
-
-
+function simplifySettlements(balances) {
+  const creditors = [], debtors = [];
+  Object.entries(balances).forEach(([person, balance]) => {
+    if (balance > 0.005) creditors.push({ person, amount: balance });
+    else if (balance < -0.005) debtors.push({ person, amount: -balance });
+  });
+  creditors.sort((a, b) => b.amount - a.amount);
+  debtors.sort((a, b) => b.amount - a.amount);
   const transactions = [];
-
-  let i = 0;
-  let j = 0;
-
-
-  while (
-    i < debtors.length &&
-    j < creditors.length
-  ) {
-
-    const amount =
-      Math.min(
-        debtors[i].amount,
-        creditors[j].amount
-      );
-
-
-    transactions.push({
-
-      from:
-        debtors[i].person,
-
-      to:
-        creditors[j].person,
-
-      amount
-
-    });
-
-
+  let i = 0, j = 0;
+  while (i < debtors.length && j < creditors.length) {
+    const amount = Math.min(debtors[i].amount, creditors[j].amount);
+    transactions.push({ from: debtors[i].person, to: creditors[j].person, amount });
     debtors[i].amount -= amount;
-
     creditors[j].amount -= amount;
-
-
-    if (
-      debtors[i].amount <
-      0.005
-    ) i++;
-
-
-    if (
-      creditors[j].amount <
-      0.005
-    ) j++;
-
+    if (debtors[i].amount < 0.005) i++;
+    if (creditors[j].amount < 0.005) j++;
   }
-
-
   return transactions;
-
 }
 
 
 /* =========================================================
    SPLIT UI
    ========================================================= */
+function updateSplitToggleIndicator() {
+  const toggle = document.getElementById("splitToggle");
+  if (splitMode === "custom") toggle.classList.add("custom-active");
+  else toggle.classList.remove("custom-active");
+}
 
 function buildSplitSection() {
-
-  const container =
-    document.getElementById(
-      "splitWith"
-    );
-
-  const remaining =
-    document.getElementById(
-      "splitRemaining"
-    );
-
-
+  const container = document.getElementById("splitWith");
+  const remaining = document.getElementById("splitRemaining");
   container.innerHTML = "";
 
-
   if (!people.length) {
-
-    container.innerHTML =
-      `<div class="empty">
-        Add people first
-      </div>`;
-
-    remaining.style.display =
-      "none";
-
+    container.innerHTML = `<div class="empty"><span class="empty-icon">👥</span>Add people first</div>`;
+    remaining.style.display = "none";
     return;
-
   }
 
-
-  const amount =
-    parseFloat(
-      document
-        .getElementById(
-          "amountInput"
-        )
-        .value
-    ) || 0;
-
+  const amount = parseFloat(document.getElementById("amountInput").value) || 0;
 
   people.forEach(person => {
+    const row = document.createElement("div");
+    row.className = "person-check";
+    const left = document.createElement("label");
+    left.className = "person-check-left";
 
-    const row =
-      document.createElement(
-        "div"
-      );
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.className = "split-check";
+    checkbox.value = person;
+    checkbox.checked = editPrefillShares ? Object.prototype.hasOwnProperty.call(editPrefillShares, person) : true;
 
-    row.className =
-      "person-check";
+    const name = document.createTextNode(person);
+    left.appendChild(checkbox);
+    left.appendChild(name);
+    row.appendChild(left);
 
-
-    const left =
-      document.createElement(
-        "label"
-      );
-
-    left.className =
-      "person-check-left";
-
-
-    const checkbox =
-      document.createElement(
-        "input"
-      );
-
-    checkbox.type =
-      "checkbox";
-
-    checkbox.className =
-      "split-check";
-
-    checkbox.value =
-      person;
-
-    checkbox.checked =
-      true;
-
-
-    const name =
-      document.createTextNode(
-        person
-      );
-
-
-    left.appendChild(
-      checkbox
-    );
-
-    left.appendChild(
-      name
-    );
-
-
-    row.appendChild(
-      left
-    );
-
-
-    if (
-      splitMode === "custom"
-    ) {
-
-      const share =
-        document.createElement(
-          "input"
-        );
-
-      share.type =
-        "number";
-
-      share.className =
-        "share-input";
-
+    if (splitMode === "custom") {
+      const share = document.createElement("input");
+      share.type = "number";
+      share.className = "share-input";
       share.min = "0";
-
       share.step = "0.01";
-
-      const each =
-        amount / people.length;
-
-      share.value =
-        each
-          ? each.toFixed(2)
-          : "";
-
-      share.addEventListener(
-        "input",
-        updateRemaining
-      );
-
-      checkbox.addEventListener(
-        "change",
-        () => {
-
-          share.disabled =
-            !checkbox.checked;
-
-          updateRemaining();
-
-        }
-      );
-
-      row.appendChild(
-        share
-      );
-
+      const each = amount / people.length;
+      const prefill = editPrefillShares && editPrefillShares[person] != null ? editPrefillShares[person] : each;
+      share.value = prefill ? prefill.toFixed(2) : "";
+      share.disabled = !checkbox.checked;
+      share.addEventListener("input", updateRemaining);
+      checkbox.addEventListener("change", () => { share.disabled = !checkbox.checked; updateRemaining(); });
+      row.appendChild(share);
     }
 
-
-    container.appendChild(
-      row
-    );
-
+    container.appendChild(row);
   });
 
-
-  if (
-    splitMode === "custom"
-  ) {
-
-    remaining.style.display =
-      "block";
-
-    updateRemaining();
-
-  } else {
-
-    remaining.style.display =
-      "none";
-
-  }
-
+  if (splitMode === "custom") { remaining.style.display = "block"; updateRemaining(); }
+  else { remaining.style.display = "none"; }
 }
 
 
-/* =========================================================
-   CUSTOM SPLIT
-   ========================================================= */
-
 function updateRemaining() {
+  if (splitMode !== "custom") return;
+  const amount = parseFloat(document.getElementById("amountInput").value) || 0;
+  const inputs = Array.from(document.querySelectorAll(".share-input")).filter(i => !i.disabled);
+  const total = inputs.reduce((sum, i) => sum + (parseFloat(i.value) || 0), 0);
+  const diff = amount - total;
+  const el = document.getElementById("splitRemaining");
 
-  if (
-    splitMode !== "custom"
-  ) return;
-
-
-  const amount =
-    parseFloat(
-      document
-        .getElementById(
-          "amountInput"
-        )
-        .value
-    ) || 0;
-
-
-  const inputs =
-    Array.from(
-      document.querySelectorAll(
-        ".share-input"
-      )
-    )
-    .filter(
-      input => !input.disabled
-    );
-
-
-  const total =
-    inputs.reduce(
-      (sum, input) =>
-        sum +
-        (
-          parseFloat(
-            input.value
-          ) || 0
-        ),
-      0
-    );
-
-
-  const difference =
-    amount - total;
-
-
-  const element =
-    document.getElementById(
-      "splitRemaining"
-    );
-
-
-  if (
-    Math.abs(difference) <
-    0.01
-  ) {
-
-    element.textContent =
-      "✓ Fully allocated";
-
-    element.style.color =
-      "var(--green)";
-
-  }
-
-  else if (
-    difference > 0
-  ) {
-
-    element.textContent =
-      `${fmt(difference)} remaining`;
-
-    element.style.color =
-      "var(--yellow)";
-
-  }
-
-  else {
-
-    element.textContent =
-      `${fmt(Math.abs(difference))} over`;
-
-    element.style.color =
-      "var(--red)";
-
-  }
-
+  if (Math.abs(diff) < 0.01) { el.textContent = "✓ Fully allocated"; el.style.color = "var(--green)"; }
+  else if (diff > 0) { el.textContent = `${fmt(diff)} remaining`; el.style.color = "var(--yellow)"; }
+  else { el.textContent = `${fmt(Math.abs(diff))} over`; el.style.color = "var(--red)"; }
 }
 
 
 /* =========================================================
    RENDER
    ========================================================= */
-
 function render() {
-
+  renderGroupSelector();
   renderPeople();
-
   renderPayer();
-
   renderExpenses();
-
   renderBalances();
-
+  renderCategoryChart();
   renderSettlements();
-
   buildSplitSection();
-
   updateDashboard();
 
+  // re-observe any new reveal elements
+  if (window._observeReveals) window._observeReveals();
 }
 
 
-/* =========================================================
-   PEOPLE RENDER
-   ========================================================= */
+function renderGroupSelector() {
+  const select = document.getElementById("groupSelect");
+  select.innerHTML = "";
+  groups.forEach(g => {
+    const option = document.createElement("option");
+    option.value = g.id;
+    option.textContent = g.name;
+    select.appendChild(option);
+  });
+  select.value = currentGroupId;
+}
+
 
 function renderPeople() {
-
-  const container =
-    document.getElementById(
-      "peopleChips"
-    );
-
+  const container = document.getElementById("peopleChips");
   container.innerHTML = "";
-
-
-  document.getElementById(
-    "peopleCount"
-  ).textContent =
-    `${people.length} ${
-      people.length === 1
-        ? "member"
-        : "members"
-    }`;
-
+  document.getElementById("peopleCount").textContent = `${people.length} ${people.length === 1 ? "member" : "members"}`;
 
   if (!people.length) {
-
-    container.innerHTML =
-      `<div class="empty">
-        No people added yet
-      </div>`;
-
+    container.innerHTML = `<div class="empty"><span class="empty-icon">🫂</span>No people added yet</div>`;
     return;
-
   }
 
-
   people.forEach(person => {
-
-    const chip =
-      document.createElement(
-        "div"
-      );
-
-    chip.className =
-      "chip";
-
-
+    const chip = document.createElement("div");
+    chip.className = "chip";
     chip.innerHTML = `
-      <span>
-        ${escapeHtml(person)}
-      </span>
-
-      <button
-        class="chip-remove"
-        aria-label="Remove person"
-      >
-        ×
-      </button>
+      <span>${escapeHtml(person)}</span>
+      <button class="chip-upi" title="Set UPI ID">💳</button>
+      <button class="chip-remove" aria-label="Remove person">×</button>
     `;
-
-
-    chip
-      .querySelector(
-        ".chip-remove"
-      )
-      .onclick =
-        () =>
-          removePerson(person);
-
-
-    container.appendChild(
-      chip
-    );
-
+    chip.querySelector(".chip-upi").onclick = () => setPersonUpi(person);
+    chip.querySelector(".chip-remove").onclick = () => removePerson(person);
+    container.appendChild(chip);
   });
-
 }
 
-
-/* =========================================================
-   PAYER
-   ========================================================= */
 
 function renderPayer() {
-
-  const select =
-    document.getElementById(
-      "payerInput"
-    );
-
-  const previous =
-    select.value;
-
-
-  select.innerHTML =
-    `<option value="">
-      Select payer...
-    </option>`;
-
-
+  const select = document.getElementById("payerInput");
+  const previous = select.value;
+  select.innerHTML = `<option value="">Select payer...</option>`;
   people.forEach(person => {
-
-    const option =
-      document.createElement(
-        "option"
-      );
-
-    option.value =
-      person;
-
-    option.textContent =
-      person;
-
-    select.appendChild(
-      option
-    );
-
+    const option = document.createElement("option");
+    option.value = person;
+    option.textContent = person;
+    select.appendChild(option);
   });
-
-
-  if (
-    people.includes(previous)
-  ) {
-
-    select.value =
-      previous;
-
-  }
-
+  if (people.includes(previous)) select.value = previous;
 }
 
-
-/* =========================================================
-   EXPENSE RENDER
-   ========================================================= */
 
 function renderExpenses() {
-
-  const container =
-    document.getElementById(
-      "expenseList"
-    );
-
+  const container = document.getElementById("expenseList");
   container.innerHTML = "";
 
+  const query = (document.getElementById("searchInput").value || "").trim().toLowerCase();
+  const visible = query
+    ? expenses.filter(e =>
+        e.desc.toLowerCase().includes(query) ||
+        e.payer.toLowerCase().includes(query) ||
+        (e.category || "").toLowerCase().includes(query) ||
+        String(e.amount).includes(query)
+      )
+    : expenses;
 
-  if (!expenses.length) {
-
-    container.innerHTML =
-      `<div class="empty">
-        No expenses yet.<br>
-        Add your first transaction.
-      </div>`;
-
+  if (!visible.length) {
+    container.innerHTML = expenses.length
+      ? `<div class="empty"><span class="empty-icon">🔍</span>No expenses match your search.</div>`
+      : `<div class="empty"><span class="empty-icon">📝</span>No expenses yet.<br>Add your first transaction.</div>`;
   }
-
 
   let total = 0;
+  expenses.forEach(e => { total += e.amount; });
 
+  visible.forEach(expense => {
+    const item = document.createElement("div");
+    item.className = "expense";
+    if (expense.id === lastAddedExpenseId) { item.classList.add("expense-enter"); lastAddedExpenseId = null; }
 
-  expenses.forEach(expense => {
-
-    total +=
-      expense.amount;
-
-
-    const item =
-      document.createElement(
-        "div"
-      );
-
-    item.className =
-      "expense";
-
-
-    const peopleCount =
-      Object.keys(
-        expense.shares || {}
-      ).length;
-
+    const peopleCount = Object.keys(expense.shares || {}).length;
+    const cat = expense.category || "Other";
 
     item.innerHTML = `
-
       <div class="expense-main">
-
-        <div class="expense-name">
-          ${escapeHtml(expense.desc)}
-        </div>
-
+        <div class="expense-name">${escapeHtml(expense.desc)}</div>
         <div class="expense-meta">
+          <span class="expense-tag" data-cat="${escapeHtml(cat)}">${escapeHtml(cat)}</span>
           Paid by ${escapeHtml(expense.payer)}
           · split between ${peopleCount}
+          ${expense.date ? ` · ${formatDate(expense.date)}` : ""}
         </div>
-
-        <button
-          class="delete-btn"
-        >
-          Remove
-        </button>
-
+        <div class="expense-actions">
+          <button class="edit-btn">✏️ Edit</button>
+          <button class="delete-btn">Remove</button>
+        </div>
       </div>
-
-      <div class="expense-amount">
-        ${fmt(expense.amount)}
-      </div>
-
+      <div class="expense-amount">${fmt(expense.amount)}</div>
     `;
 
-
-    item
-      .querySelector(
-        ".delete-btn"
-      )
-      .onclick =
-        () =>
-          removeExpense(
-            expense.id
-          );
-
-
-    container.appendChild(
-      item
-    );
-
+    item.querySelector(".edit-btn").onclick = () => startEditExpense(expense.id);
+    item.querySelector(".delete-btn").onclick = () => removeExpense(expense.id);
+    container.appendChild(item);
   });
 
-
-  document.getElementById(
-    "totalAmt"
-  ).textContent =
-    fmt(total);
-
+  document.getElementById("totalAmt").textContent = fmt(total);
 }
 
 
-/* =========================================================
-   BALANCE RENDER
-   ========================================================= */
+function renderCategoryChart() {
+  const container = document.getElementById("categoryChart");
+  container.innerHTML = "";
+
+  if (!expenses.length) {
+    container.innerHTML = `<div class="empty"><span class="empty-icon">📊</span>No expenses yet.</div>`;
+    return;
+  }
+
+  const totals = {};
+  expenses.forEach(e => { const cat = e.category || "Other"; totals[cat] = (totals[cat] || 0) + e.amount; });
+  const grandTotal = Object.values(totals).reduce((sum, v) => sum + v, 0);
+  const max = Math.max(...Object.values(totals));
+
+  Object.entries(totals).sort((a, b) => b[1] - a[1]).forEach(([cat, amount]) => {
+    const pct = grandTotal ? (amount / grandTotal) * 100 : 0;
+    const row = document.createElement("div");
+    row.className = "cat-row";
+    row.innerHTML = `
+      <div class="cat-row-top">
+        <span>${escapeHtml(cat)}</span>
+        <span>${fmt(amount)} · ${pct.toFixed(0)}%</span>
+      </div>
+      <div class="cat-bar-track">
+        <div class="cat-bar-fill" data-cat="${escapeHtml(cat)}" style="width:${max ? (amount / max) * 100 : 0}%"></div>
+      </div>
+    `;
+    container.appendChild(row);
+  });
+}
+
 
 function renderBalances() {
-
-  const container =
-    document.getElementById(
-      "balanceList"
-    );
-
+  const container = document.getElementById("balanceList");
   container.innerHTML = "";
 
-
   if (!people.length) {
-
-    container.innerHTML =
-      `<div class="empty">
-        Add people to see balances.
-      </div>`;
-
+    container.innerHTML = `<div class="empty"><span class="empty-icon">⚖️</span>Add people to see balances.</div>`;
     return;
-
   }
 
+  const balances = computeBalances();
+  Object.entries(balances).forEach(([person, balance]) => {
+    const row = document.createElement("div");
+    row.className = "balance-row";
+    let text, className;
+    if (balance > 0.005) { text = `gets ${fmt(balance)}`; className = "balance-positive"; }
+    else if (balance < -0.005) { text = `owes ${fmt(Math.abs(balance))}`; className = "balance-negative"; }
+    else { text = "settled"; className = "balance-zero"; }
 
-  const balances =
-    computeBalances();
-
-
-  Object.entries(
-    balances
-  ).forEach(
-    ([person, balance]) => {
-
-      const row =
-        document.createElement(
-          "div"
-        );
-
-      row.className =
-        "balance-row";
-
-
-      let text;
-      let className;
-
-
-      if (
-        balance > 0.005
-      ) {
-
-        text =
-          `gets ${fmt(balance)}`;
-
-        className =
-          "balance-positive";
-
-      }
-
-      else if (
-        balance < -0.005
-      ) {
-
-        text =
-          `owes ${fmt(
-            Math.abs(balance)
-          )}`;
-
-        className =
-          "balance-negative";
-
-      }
-
-      else {
-
-        text =
-          "settled";
-
-        className =
-          "balance-zero";
-
-      }
-
-
-      row.innerHTML = `
-
-        <span>
-          ${escapeHtml(person)}
-        </span>
-
-        <span class="${className}">
-          ${text}
-        </span>
-
-      `;
-
-
-      container.appendChild(
-        row
-      );
-
-    }
-  );
-
+    row.innerHTML = `<span>${escapeHtml(person)}</span><span class="${className}">${text}</span>`;
+    container.appendChild(row);
+  });
 }
 
 
-/* =========================================================
-   SETTLEMENT RENDER
-   ========================================================= */
-
 function renderSettlements() {
-
-  const container =
-    document.getElementById(
-      "settlementList"
-    );
-
+  const container = document.getElementById("settlementList");
   container.innerHTML = "";
 
-
   if (!people.length) {
-
-    container.innerHTML =
-      `<div class="empty">
-        Add people to calculate settlements.
-      </div>`;
-
+    container.innerHTML = `<div class="empty"><span class="empty-icon">🤝</span>Add people to calculate settlements.</div>`;
     return;
-
   }
 
-
-  const balances =
-    computeBalances();
-
-
-  const transactions =
-    simplifySettlements(
-      balances
-    );
-
+  const balances = computeBalances();
+  const transactions = simplifySettlements(balances);
 
   if (!transactions.length) {
-
-    if (!wasSettled) {
-
-      celebrate();
-
-    }
-
+    if (!wasSettled) fireConfetti();
     wasSettled = true;
-
     container.innerHTML = `
-
       <div class="all-settled">
-
-        <div class="all-settled-icon">
-          ✓
-        </div>
-
+        <div class="all-settled-icon">✓</div>
         Everyone is settled up
-
       </div>
-
     `;
-
     return;
-
   }
 
   wasSettled = false;
+  const group = groups.find(g => g.id === currentGroupId);
+  const upiMap = (group && group.upi) || {};
 
+  transactions.forEach(transaction => {
+    const row = document.createElement("div");
+    row.className = "settle";
+    const upi = upiMap[transaction.to];
+    const upiLink = upi
+      ? `upi://pay?pa=${encodeURIComponent(upi)}&pn=${encodeURIComponent(transaction.to)}&am=${transaction.amount.toFixed(2)}&cu=INR&tn=${encodeURIComponent("Tally settlement")}`
+      : null;
 
-  transactions.forEach(
-    transaction => {
-
-      const row =
-        document.createElement(
-          "div"
-        );
-
-      row.className =
-        "settle";
-
-
-      row.innerHTML = `
-
-        <span class="settle-person">
-          ${escapeHtml(
-            transaction.from
-          )}
-        </span>
-
-        <span class="arrow">
-          →
-        </span>
-
-        <span class="settle-person">
-          ${escapeHtml(
-            transaction.to
-          )}
-        </span>
-
-        <span class="settle-amount">
-          ${fmt(
-            transaction.amount
-          )}
-        </span>
-
-      `;
-
-
-      container.appendChild(
-        row
-      );
-
-    }
-  );
-
+    row.innerHTML = `
+      <div class="settle-top">
+        <span class="settle-person">${escapeHtml(transaction.from)}</span>
+        <span class="arrow">→</span>
+        <span class="settle-person">${escapeHtml(transaction.to)}</span>
+        <span class="settle-amount">${fmt(transaction.amount)}</span>
+      </div>
+      ${upiLink ? `<a class="upi-pay-btn" href="${upiLink}" target="_blank" rel="noopener">Pay via UPI</a>` : ""}
+    `;
+    container.appendChild(row);
+  });
 }
 
 
 /* =========================================================
-   DASHBOARD
+   DASHBOARD (with counter animation)
    ========================================================= */
-
 function updateDashboard() {
-
-  const total =
-    expenses.reduce(
-      (sum, expense) =>
-        sum + expense.amount,
-      0
-    );
-
-
-  document.getElementById(
-    "totalStat"
-  ).textContent =
-    fmt(total);
-
-
-  document.getElementById(
-    "peopleStat"
-  ).textContent =
-    people.length;
-
-
-  document.getElementById(
-    "expenseStat"
-  ).textContent =
-    expenses.length;
-
+  const total = expenses.reduce((sum, e) => sum + e.amount, 0);
+  animateCounter(document.getElementById("totalStat"), total, "₹", true);
+  animateCounter(document.getElementById("peopleStat"), people.length, "", false);
+  animateCounter(document.getElementById("expenseStat"), expenses.length, "", false);
 }
 
 
 /* =========================================================
    CLEAR ALL
    ========================================================= */
-
-document
-  .getElementById("clearBtn")
-  .onclick =
-    () => {
-
-      if (!people.length &&
-          !expenses.length) {
-
-        showToast(
-          "Nothing to clear"
-        );
-
-        return;
-
-      }
-
-
-      if (
-        !confirm(
-          "Delete all people and expenses?"
-        )
-      ) return;
-
-
-      people = [];
-
-      expenses = [];
-
-      saveData();
-
-      render();
-
-      showToast(
-        "Ledger cleared"
-      );
-
-    };
+document.getElementById("clearBtn").onclick = () => {
+  if (!people.length && !expenses.length) { showToast("Nothing to clear"); return; }
+  if (!confirm("Delete all people and expenses?")) return;
+  people = [];
+  expenses = [];
+  saveData(); render();
+  showToast("Ledger cleared");
+};
 
 
 /* =========================================================
    EVENT LISTENERS
    ========================================================= */
+document.getElementById("addPersonBtn").onclick = addPerson;
+document.getElementById("personInput").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); addPerson(); } });
+document.getElementById("addExpenseBtn").onclick = addExpense;
+document.getElementById("cancelEditBtn").onclick = cancelEdit;
+document.getElementById("amountInput").addEventListener("input", () => buildSplitSection());
+document.getElementById("amountInput").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); addExpense(); } });
+document.getElementById("groupSelect").addEventListener("change", e => switchGroup(e.target.value));
+document.getElementById("newGroupBtn").onclick = addGroup;
+document.getElementById("renameGroupBtn").onclick = renameGroup;
+document.getElementById("deleteGroupBtn").onclick = deleteGroup;
 
-document
-  .getElementById(
-    "addPersonBtn"
-  )
-  .onclick =
-    addPerson;
+// Export menu
+document.getElementById("exportBtn").addEventListener("click", e => {
+  e.stopPropagation();
+  const menu = document.getElementById("exportMenuList");
+  const open = menu.classList.toggle("open");
+  document.getElementById("exportBtn").setAttribute("aria-expanded", open ? "true" : "false");
+});
+document.getElementById("exportCsvBtn").onclick = () => { exportCSV(); document.getElementById("exportMenuList").classList.remove("open"); };
+document.getElementById("exportXlsxBtn").onclick = () => { exportExcel(); document.getElementById("exportMenuList").classList.remove("open"); };
 
+document.addEventListener("click", e => {
+  const menu = document.querySelector(".export-menu");
+  if (menu && !menu.contains(e.target)) {
+    document.getElementById("exportMenuList").classList.remove("open");
+    document.getElementById("exportBtn").setAttribute("aria-expanded", "false");
+  }
+});
 
-document
-  .getElementById(
-    "personInput"
-  )
-  .addEventListener(
-    "keydown",
-    event => {
+document.getElementById("searchInput").addEventListener("input", renderExpenses);
+document.getElementById("dateInput").value = todayStr();
 
-      if (
-        event.key === "Enter"
-      ) {
-
-        event.preventDefault();
-
-        addPerson();
-
-      }
-
-    }
-  );
-
-
-document
-  .getElementById(
-    "addExpenseBtn"
-  )
-  .onclick =
-    addExpense;
-
-
-document
-  .getElementById(
-    "amountInput"
-  )
-  .addEventListener(
-    "input",
-    () => {
-
-      buildSplitSection();
-
-    }
-  );
-
-
-document
-  .querySelectorAll(
-    ".split-mode"
-  )
-  .forEach(button => {
-
-    button.addEventListener(
-      "click",
-      () => {
-
-        splitMode =
-          button.dataset.mode;
-
-
-        document
-          .querySelectorAll(
-            ".split-mode"
-          )
-          .forEach(
-            item =>
-              item.classList.toggle(
-                "active",
-                item === button
-              )
-          );
-
-
-        buildSplitSection();
-
-      }
-    );
-
+// Split toggle with sliding pill
+document.querySelectorAll(".split-mode").forEach(button => {
+  button.addEventListener("click", () => {
+    splitMode = button.dataset.mode;
+    document.querySelectorAll(".split-mode").forEach(item => item.classList.toggle("active", item === button));
+    updateSplitToggleIndicator();
+    buildSplitSection();
   });
+});
+
+// FAB — scroll to expense form
+document.getElementById("fabBtn").addEventListener("click", () => {
+  document.getElementById("expenseFormCard").scrollIntoView({ behavior: "smooth", block: "start" });
+});
 
 
 /* =========================================================
-   THEME SWITCHER
+   LIGHT / DARK MODE
    ========================================================= */
-
-const THEME_KEY = "tally-theme";
-
-
-const THEME_ICONS = {
-
-  trip: `<svg viewBox="0 0 24 24"><path d="M21 3 3 10.5l7 2.5M21 3 13.5 21l-3-8M21 3 10.5 12.5"/></svg>`,
-
-  picnic: `<svg viewBox="0 0 24 24"><path d="M4 10h16l-1.5 9a2 2 0 0 1-2 1.7H7.5a2 2 0 0 1-2-1.7L4 10Z"/><path d="M7 10a5 5 0 0 1 10 0"/><path d="M8 10v10M12 10v10M16 10v10" stroke-width=".4"/></svg>`,
-
-  dinner: `<svg viewBox="0 0 24 24"><path d="M7 3h10l-1 7a4 4 0 0 1-8 0L7 3Z"/><path d="M12 14v6M8.5 20h7"/></svg>`,
-
-  expenses: `<svg viewBox="0 0 24 24"><path d="M6 2h12v19l-2-1.3L14 21l-2-1.3L10 21l-2-1.3L6 21V2Z"/><path d="M8.5 7h7M8.5 11h7M8.5 15h4.5" stroke-width=".5"/></svg>`,
-
-  drinks: `<svg viewBox="0 0 24 24"><path d="M4 4h16l-8 9-8-9Z"/><path d="M12 13v7M8 20h8"/><circle cx="9.3" cy="6" r=".9" stroke-width=".5"/></svg>`,
-
-  pub: `<svg viewBox="0 0 24 24"><path d="M5 8h11v10a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V8Z"/><path d="M16 10h2a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-2"/><path d="M5 8c0-2.5 2-3.5 2-5.5M8.5 8c0-2.2 1.7-3 1.7-5" stroke-width=".4"/></svg>`,
-
-  love: `<svg viewBox="0 0 24 24"><path d="M12 21s-6.7-4.35-9.3-8.3C.7 9.4 2 5 6 5c2 0 3.4 1.2 4 2.4C10.6 6.2 12 5 14 5c4 0 5.3 4.4 3.3 7.7C18.7 16.65 12 21 12 21Z"/></svg>`,
-
-  friends: `<svg viewBox="0 0 24 24"><ellipse cx="6" cy="7" rx="3" ry="4" stroke-width=".5"/><ellipse cx="13" cy="5" rx="3.4" ry="4.4" stroke-width=".5"/><ellipse cx="19" cy="9" rx="2.6" ry="3.4" stroke-width=".5"/><path d="M6 11c0 1 .6 1.4 0 2.4M13 9.4c0 1.2.8 1.6 0 2.8M19 12.4c0 1 .5 1.3 0 2.2" stroke-width=".4"/></svg>`
-
-};
-
-
-const THEME_ROTATION = {
-
-  trip: "-8deg",
-  picnic: "5deg",
-  dinner: "-4deg",
-  expenses: "0deg",
-  drinks: "6deg",
-  pub: "-6deg",
-  love: "8deg",
-  friends: "-3deg"
-
-};
-
-
-const CELEBRATE_EMOJI = {
-
-  night: "✨",
-  trip: "✈️",
-  picnic: "🧺",
-  dinner: "🕯️",
-  expenses: "✅",
-  drinks: "🍸",
-  pub: "🍺",
-  love: "❤️",
-  friends: "🎉",
-  money: "💰"
-
-};
-
-
+const MODE_KEY = "tally-mode";
 let wasSettled = false;
 
+function applyMode(mode) {
+  document.documentElement.setAttribute("data-mode", mode);
+  localStorage.setItem(MODE_KEY, mode);
+  const btn = document.getElementById("modeToggleBtn");
+  btn.textContent = mode === "light" ? "☀️" : "🌙";
+  btn.setAttribute("aria-pressed", mode === "light" ? "true" : "false");
+}
 
-function celebrate() {
-
-  const emoji =
-    CELEBRATE_EMOJI[
-      document.documentElement.dataset.theme
-    ] || "✨";
-
-  for (let i = 0; i < 10; i++) {
-
-    const piece =
-      document.createElement("span");
-
-    piece.className =
-      "celebrate-piece";
-
-    piece.textContent =
-      emoji;
-
-    piece.style.left =
-      (10 + Math.random() * 80) + "vw";
-
-    piece.style.fontSize =
-      (16 + Math.random() * 14) + "px";
-
-    piece.style.animationDelay =
-      (Math.random() * .3) + "s";
-
-    document.body.appendChild(piece);
-
-    setTimeout(
-      () => piece.remove(),
-      2000
-    );
-
+function initMode() {
+  let saved = localStorage.getItem(MODE_KEY);
+  if (!saved) {
+    saved = window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
   }
-
+  applyMode(saved);
 }
 
+document.getElementById("modeToggleBtn").addEventListener("click", () => {
+  const current = document.documentElement.getAttribute("data-mode") === "light" ? "light" : "dark";
+  applyMode(current === "light" ? "dark" : "light");
+});
 
-function applyTheme(id) {
-
-  document.documentElement.setAttribute(
-    "data-theme",
-    id
-  );
-
-  localStorage.setItem(
-    THEME_KEY,
-    id
-  );
-
-  document
-    .querySelectorAll(".theme-btn")
-    .forEach(btn => {
-
-      btn.setAttribute(
-        "aria-pressed",
-        btn.dataset.theme === id
-          ? "true"
-          : "false"
-      );
-
-    });
+initMode();
 
 
-  const markup =
-    THEME_ICONS[id] || "";
-
-  document.getElementById("themeIconA").innerHTML = markup;
-  document.getElementById("themeIconB").innerHTML = markup;
-  document.getElementById("themeIconC").innerHTML = markup;
-
-  document
-    .getElementById("themeScene")
-    .style.setProperty(
-      "--icon-rot",
-      THEME_ROTATION[id] || "0deg"
-    );
-
-}
-
-
-function initTheme() {
-
-  const saved =
-    localStorage.getItem(THEME_KEY) ||
-    "night";
-
-  applyTheme(saved);
-
-}
-
-
-document
-  .querySelectorAll(".theme-btn")
-  .forEach(btn => {
-
-    btn.addEventListener(
-      "click",
-      () => {
-
-        applyTheme(btn.dataset.theme);
-
-        document
-          .getElementById("themeOptions")
-          .classList.remove("open");
-
-        document
-          .getElementById("themeToggleBtn")
-          .setAttribute(
-            "aria-expanded",
-            "false"
-          );
-
-      }
-    );
-
+/* =========================================================
+   PWA
+   ========================================================= */
+if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("service-worker.js").catch(() => {});
   });
-
-
-document
-  .getElementById("themeToggleBtn")
-  .addEventListener(
-    "click",
-    () => {
-
-      const panel =
-        document.getElementById(
-          "themeOptions"
-        );
-
-      const open =
-        panel.classList.toggle("open");
-
-      document
-        .getElementById("themeToggleBtn")
-        .setAttribute(
-          "aria-expanded",
-          open ? "true" : "false"
-        );
-
-    }
-  );
-
-
-document.addEventListener(
-  "click",
-  event => {
-
-    const switcher =
-      document.querySelector(
-        ".theme-switcher"
-      );
-
-    if (
-      !switcher.contains(event.target)
-    ) {
-
-      document
-        .getElementById("themeOptions")
-        .classList.remove("open");
-
-      document
-        .getElementById("themeToggleBtn")
-        .setAttribute(
-          "aria-expanded",
-          "false"
-        );
-
-    }
-
-  }
-);
-
-
-initTheme();
+}
 
 
 /* =========================================================
    START
    ========================================================= */
-
 loadData();
 
 </script>
-
 </body>
 </html>
