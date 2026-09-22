@@ -510,7 +510,7 @@ Example:
 Add your deployed application URL here:
 
 ```text
-https://your-tally-app-url.com
+https://splitexpenses-2w4b.onrender.com
 ```
 
 ---
