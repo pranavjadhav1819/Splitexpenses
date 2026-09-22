@@ -18,7 +18,7 @@ A modern, responsive expense-splitting web app designed for groups, trips, roomm
 
 <br>
 
-[✨ Live Demo](#-live-demo) •
+[✨ Live Demo](https://splitexpenses-2w4b.onrender.com) •
 [🚀 Features](#-features) •
 [🛠️ Installation](#-installation) •
 [📖 Usage](#-usage) •
