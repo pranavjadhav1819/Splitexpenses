@@ -507,7 +507,7 @@ Example:
 
 **TALLY — Smart Expense Splitter**
 
-Add your deployed application URL here:
+deployed application URL :
 
 ```text
 https://splitexpenses-2w4b.onrender.com
