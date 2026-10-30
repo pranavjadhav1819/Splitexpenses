@@ -272,47 +272,30 @@ Excel export uses the SheetJS/XLSX library loaded dynamically when required.
 
 ### 🌙 Dark / ☀️ Light Mode
 
-TALLY includes a complete theme system.
+TALLY includes a complete theme system with a clean, neutral look in both modes.
 
-**Dark Mode**
+**Light Mode** — white surfaces on a soft off-white background with hairline borders.
 
-* Deep background
-* Purple gradients
-* Glassmorphism
-* Aurora effects
-* Particle mesh
+**Dark Mode** — near-black surfaces with subtle borders and softened accent colors.
 
-**Light Mode**
-
-* Light surfaces
-* Soft shadows
-* Adjusted contrast
-* Light aurora effects
-
-The selected theme is saved locally.
+The theme follows the system preference on first visit, and the selected theme is saved locally.
 
 ---
 
-### 🎨 Modern UI
+### 🎨 Minimal UI
 
-The interface uses a combination of:
+The interface is intentionally quiet and content-first:
 
-* Glassmorphism
-* Aurora gradients
-* Animated particles
-* Noise texture
-* Gradient typography
-* Floating cards
-* Micro-interactions
-* Ripple effects
-* 3D card tilt
-* Scroll reveal animations
-* Animated counters
+* Neutral surfaces with 1px hairline borders — no heavy shadows
+* A single restrained accent color, with green/red used only for balances
+* Inter typeface with tabular numerals for aligned amounts
+* Compact stats row, divider-based lists, and a segmented split control
+* Animated counters and subtle transitions, with full `prefers-reduced-motion` support
 * Toast notifications
 
 ---
 
-### 🎉 Celebration Animation
+### ✅ All Settled State
 
 When everyone is completely settled, TALLY displays:
 
@@ -321,8 +304,6 @@ When everyone is completely settled, TALLY displays:
 
 Everyone is settled up
 ```
-
-with a celebration/confetti animation.
 
 ---
 
@@ -420,39 +401,48 @@ TALLY follows a lightweight client-side architecture:
 | Technology         | Purpose                            |
 | ------------------ | ---------------------------------- |
 | HTML5              | Application structure              |
-| CSS3               | UI, animations & responsive design |
+| CSS3               | Minimal UI & responsive design     |
 | Vanilla JavaScript | Application logic                  |
 | LocalStorage API   | Local data persistence             |
-| Canvas API         | Particles & confetti               |
 | Web APIs           | PWA & browser functionality        |
 | SheetJS / XLSX     | Excel export                       |
-| Google Fonts       | DM Sans & Space Mono               |
+| Google Fonts       | Inter                              |
 
 ### Fonts
 
-* **DM Sans** — primary interface font
-* **Space Mono** — numerical/data font
+* **Inter** — interface font, with tabular numerals for amounts
 
 ---
 
 ## 🎨 Design System
 
-### Primary Palette
+### Light
 
 ```text
-Primary Purple     #7c5cff
-Secondary Purple   #9b85ff
-Cyan               #36d1dc
-Green              #38d996
-Red                #ff5f6d
-Yellow             #ffc857
+Background   #fafafa
+Surface      #ffffff
+Border       #e7e7ea
+Text         #111113
+Muted        #71717a
+Accent       #4f46e5
 ```
 
-### Background
+### Dark
 
 ```text
-Dark Background    #080a0f
-Secondary          #0e1118
+Background   #09090b
+Surface      #111113
+Border       #222226
+Text         #f4f4f5
+Muted        #8b8b94
+Accent       #818cf8
+```
+
+### Semantic
+
+```text
+Positive     green   (gets money)
+Negative     red     (owes money)
 ```
 
 ### Category Colors
@@ -461,7 +451,7 @@ Secondary          #0e1118
 Food       → Pink
 Travel     → Cyan
 Hotel      → Yellow
-Shopping   → Purple
+Shopping   → Violet
 Fuel       → Orange
 Other      → Gray
 ```
