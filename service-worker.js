@@ -1,9 +1,8 @@
-const CACHE_NAME = "tally-v2";
+const CACHE_NAME = "tally-v3";
 const ASSETS = [
-  "./tally.html",
+  "./index.html",
   "./icon.svg",
-  "./manifest.json",
-  "https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap"
+  "./manifest.json"
 ];
 
 self.addEventListener("install", event => {
@@ -22,8 +21,19 @@ self.addEventListener("activate", event => {
   self.clients.claim();
 });
 
+// Network-first: users always get the latest design when online,
+// and fall back to the cached copy when offline.
 self.addEventListener("fetch", event => {
+  if (event.request.method !== "GET") return;
   event.respondWith(
-    caches.match(event.request).then(cached => cached || fetch(event.request))
+    fetch(event.request)
+      .then(response => {
+        if (response && response.ok && new URL(event.request.url).origin === location.origin) {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
+        }
+        return response;
+      })
+      .catch(() => caches.match(event.request))
   );
 });
